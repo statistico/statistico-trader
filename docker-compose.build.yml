@@ -1,0 +1,62 @@
+version: "3.3"
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: statistico
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: statistico_strategy
+    ports:
+      - 5434:5432
+    networks:
+      - statistico-strategy_default
+
+  console: &console
+    build:
+      dockerfile: ./.docker/Dockerfile
+      context: .
+    environment:
+      DB_DRIVER: postgres
+      DB_HOST: postgres
+      DB_NAME: statistico_strategy
+      DB_PASSWORD: password
+      DB_USER: statistico
+      DB_PORT: 5432
+    networks:
+      - statistico_internal
+      - statistico-strategy_default
+    tty: true
+
+  migrate:
+    <<: *console
+    command: [ "./bin/migrate" ]
+
+  statistico-strategy-grpc:
+    <<: *console
+    networks:
+      - statistico_internal
+    ports:
+      - "50053:50051"
+    command: [ "./grpc", "--port 50051" ]
+
+  test:
+    build:
+      dockerfile: ./.docker/test/Dockerfile
+      context: .
+    environment:
+      DB_DRIVER: postgres
+      DB_HOST: postgres
+      DB_PASSWORD: password
+      DB_NAME: statistico_strategy
+      DB_USER: statistico
+      DB_PORT: 5432
+    volumes:
+      - .:/opt
+    networks:
+      - statistico-strategy_default
+
+networks:
+  statistico-strategy_default:
+    external: false
+  statistico_internal:
+    external: true

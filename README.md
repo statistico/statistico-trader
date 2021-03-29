@@ -1,1 +1,1 @@
-# statistico-trader
+# Statistico Trader
