@@ -1,6 +1,9 @@
 package trader
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
 	"time"
 )
@@ -43,20 +46,20 @@ type StatFilter struct {
 	Venue   string  `json:"venue"`
 }
 
-type StakingPlan interface {
-	Identifier() string
-	Stake(bank float32) float32
-}
-
-type PercentageStakingPlan struct {
+type StakingPlan struct {
 	Name   string   `json:"name"`
-	Value  float32  `json:"value"`
+	Number float32  `json:"value"`
 }
 
-func (p *PercentageStakingPlan) Identifier() string {
-	return p.Name
+func (s StakingPlan) Value() (driver.Value, error) {
+	return json.Marshal(s)
 }
 
-func (p *PercentageStakingPlan) Stake(bank float32) float32 {
-	return (bank / 100) * p.Value
+func (s *StakingPlan) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &s)
 }

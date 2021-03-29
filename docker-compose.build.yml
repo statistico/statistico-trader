@@ -5,11 +5,11 @@ services:
     environment:
       POSTGRES_USER: statistico
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: statistico_strategy
+      POSTGRES_DB: statistico_trader
     ports:
       - 5434:5432
     networks:
-      - statistico-strategy_default
+      - statistico-trader_default
 
   console: &console
     build:
@@ -18,20 +18,20 @@ services:
     environment:
       DB_DRIVER: postgres
       DB_HOST: postgres
-      DB_NAME: statistico_strategy
+      DB_NAME: statistico_trader
       DB_PASSWORD: password
       DB_USER: statistico
       DB_PORT: 5432
     networks:
       - statistico_internal
-      - statistico-strategy_default
+      - statistico-trader_default
     tty: true
 
   migrate:
     <<: *console
     command: [ "./bin/migrate" ]
 
-  statistico-strategy-grpc:
+  statistico-trader-grpc:
     <<: *console
     networks:
       - statistico_internal
@@ -47,16 +47,16 @@ services:
       DB_DRIVER: postgres
       DB_HOST: postgres
       DB_PASSWORD: password
-      DB_NAME: statistico_strategy
+      DB_NAME: statistico_trader
       DB_USER: statistico
       DB_PORT: 5432
     volumes:
       - .:/opt
     networks:
-      - statistico-strategy_default
+      - statistico-trader_default
 
 networks:
-  statistico-strategy_default:
+  statistico-trader_default:
     external: false
   statistico_internal:
     external: true

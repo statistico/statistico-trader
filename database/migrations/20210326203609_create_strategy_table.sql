@@ -9,7 +9,7 @@ CREATE TABLE strategy (
     runner VARCHAR NOT NULL,
     min_odds FLOAT,
     max_odds FLOAT,
-    competition_ids VARCHAR[] NOT NULL,
+    competition_ids INTEGER[] NOT NULL,
     side VARCHAR NOT NULL,
     visibility VARCHAR NOT NULL,
     status VARCHAR NOT NULL,

@@ -6,6 +6,6 @@ services:
     env_file:
       - .env
 
-  statistico-strategy-grpc:
+  statistico-trader-grpc:
     env_file:
       - .env
