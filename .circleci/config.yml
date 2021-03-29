@@ -76,7 +76,7 @@ jobs:
     steps:
       - aws-cli/setup
       - aws-ecs/update-service:
-          family: 'statistico-strategy-grpc'
+          family: 'statistico-trader-grpc'
           cluster-name: 'statistico-production'
           container-image-name-updates: >
             container=grpc,image-and-tag=${AWS_ECR_ACCOUNT_URL}/statistico-trader:${CIRCLE_SHA1},
