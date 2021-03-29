@@ -1,14 +1,82 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
 orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+  aws-cli: circleci/aws-cli@0.1.20
+  aws-ecs: circleci/aws-ecs@1.1.0
+
+references:
+  workspace_root: &workspace_root
+                    /tmp/workspace
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  version: 2
+  build-test-deploy:
     jobs:
-      - welcome/run
-      - welcome/run
+      - build-and-test
+      - release-images:
+          context: aws
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: main
+      - deploy-to-production:
+          context: aws
+          requires:
+            - build-and-test
+            - release-images
+          filters:
+            branches:
+              only: main
+
+jobs:
+  build-and-test:
+    working_directory: ~/go/src/github.com/statistico/statistico-trader
+    machine: true
+    environment:
+      GOPATH: /home/circleci/go
+    steps:
+      - checkout
+      - run:
+          name: Build Release Image
+          command: |
+            docker network create statistico_internal
+            docker-compose -f docker-compose.build.yml up -d --build
+      - run:
+          name: Test Release Image
+          command: |
+            docker-compose -f docker-compose.build.yml run test gotestsum -f short-verbose
+      - run:
+          name: Cache Built Images
+          command: |
+            chmod +x ./.circleci/deploy/docker-save.sh && ./.circleci/deploy/docker-save.sh
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - docker-cache
+
+  release-images:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - *attach_workspace
+      - setup_remote_docker
+      - aws-cli/setup
+      - run:
+          name: Push images to ECR
+          command: |
+            chmod +x ./.circleci/deploy/docker-load.sh && ./.circleci/deploy/docker-load.sh
+            chmod +x ./.circleci/deploy/docker-push.sh && ./.circleci/deploy/docker-push.sh
+
+  deploy-to-production:
+    docker:
+      - image: 'circleci/python:3.7.1'
+    steps:
+      - aws-cli/setup
+      - aws-ecs/update-service:
+          family: 'statistico-strategy-grpc'
+          cluster-name: 'statistico-production'
+          container-image-name-updates: >
+            container=grpc,image-and-tag=${AWS_ECR_ACCOUNT_URL}/statistico-trader:${CIRCLE_SHA1},
