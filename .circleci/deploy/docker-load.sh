@@ -2,4 +2,4 @@
 
 set -e
 
-docker load -i /tmp/workspace/docker-cache/statisticotrader_queue.tar
+docker load -i /tmp/workspace/docker-cache/statisticotrader_console.tar
