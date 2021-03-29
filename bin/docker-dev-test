@@ -1,0 +1,3 @@
+#!/bin/bash
+
+bin/docker-dev run --rm test gotestsum -f short-verbose $@
