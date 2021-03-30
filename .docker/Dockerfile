@@ -1,5 +1,5 @@
 # Step 1
-FROM golang:1.13.9-alpine AS builder
+FROM golang:1.16-alpine AS builder
 RUN apk update && apk add git gcc g++
 ENV GO111MODULE=on
 WORKDIR /app
