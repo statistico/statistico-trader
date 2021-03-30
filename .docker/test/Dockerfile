@@ -1,4 +1,4 @@
-FROM golang:1.13.9-alpine
+FROM golang:1.16-alpine
 
 RUN apk update && apk add git gcc g++
 ENV GO111MODULE=on

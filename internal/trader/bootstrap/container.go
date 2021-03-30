@@ -11,10 +11,10 @@ import (
 )
 
 type Container struct {
-	Clock  clockwork.Clock
-	Config *Config
+	Clock    clockwork.Clock
+	Config   *Config
 	Database *sql.DB
-	Logger *logrus.Logger
+	Logger   *logrus.Logger
 }
 
 func BuildContainer(config *Config) Container {

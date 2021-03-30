@@ -69,7 +69,7 @@ func parseStakingPlan(s *statistico.StakingPlan) (trader.StakingPlan, error) {
 	}
 
 	return trader.StakingPlan{
-		Name:  s.Name.String(),
+		Name:   s.Name.String(),
 		Number: s.Value,
 	}, nil
 }
