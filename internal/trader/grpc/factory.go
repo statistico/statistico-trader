@@ -61,15 +61,15 @@ func strategyFromRequest(r *statistico.SaveStrategyRequest, t time.Time) (*trade
 
 func parseStakingPlan(s *statistico.StakingPlan) (trader.StakingPlan, error) {
 	if s.Name.String() != "PERCENTAGE" {
-		return nil, fmt.Errorf("staking plan '%s' is not supported", s.Name)
+		return trader.StakingPlan{}, fmt.Errorf("staking plan '%s' is not supported", s.Name)
 	}
 
 	if s.Value <= 0 {
-		return nil, errors.New("staking plan must be greater than zero")
+		return trader.StakingPlan{}, errors.New("staking plan must be greater than zero")
 	}
 
-	return &trader.PercentageStakingPlan{
+	return trader.StakingPlan{
 		Name:  s.Name.String(),
-		Value: s.Value,
+		Number: s.Value,
 	}, nil
 }

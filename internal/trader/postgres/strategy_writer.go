@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"encoding/json"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -29,13 +28,13 @@ func (w *strategyWriter) Insert(s *trader.Strategy) error {
 		return &errors.DuplicationError{Message: "Strategy exists with name provided"}
 	}
 
-	sp, err := json.Marshal(s.StakingPlan)
+	compIds := make([]int64, len(s.CompetitionIDs))
 
-	if err != nil {
-		return err
+	for i, c := range s.CompetitionIDs {
+		compIds[i] = int64(c)
 	}
 
-	builder := w.queryBuilder()
+	builder := queryBuilder(w.connection)
 
 	_, err = builder.
 		Insert("strategy").
@@ -65,11 +64,11 @@ func (w *strategyWriter) Insert(s *trader.Strategy) error {
 			s.RunnerName,
 			s.MinOdds,
 			s.MaxOdds,
-			pq.Array(s.CompetitionIDs),
+			pq.Array(compIds),
 			s.Side,
 			s.Visibility,
 			s.Status,
-			sp,
+			s.StakingPlan,
 			s.CreatedAt.Unix(),
 			s.UpdatedAt.Unix(),
 		).
@@ -82,7 +81,7 @@ func (w *strategyWriter) Insert(s *trader.Strategy) error {
 }
 
 func (w *strategyWriter) insertResultFilters(strategyID uuid.UUID, f []*trader.ResultFilter) error {
-	builder := w.queryBuilder()
+	builder := queryBuilder(w.connection)
 
 	for _, filter := range f {
 		_, err := builder.
@@ -112,7 +111,7 @@ func (w *strategyWriter) insertResultFilters(strategyID uuid.UUID, f []*trader.R
 }
 
 func (w *strategyWriter) insertStatFilters(strategyID uuid.UUID, f []*trader.StatFilter) error {
-	builder := w.queryBuilder()
+	builder := queryBuilder(w.connection)
 
 	for _, filter := range f {
 		_, err := builder.
@@ -149,8 +148,8 @@ func (w *strategyWriter) insertStatFilters(strategyID uuid.UUID, f []*trader.Sta
 	return nil
 }
 
-func (w *strategyWriter) queryBuilder() sq.StatementBuilderType {
-	return sq.StatementBuilder.PlaceholderFormat(sq.Dollar).RunWith(w.connection)
+func queryBuilder(c *sql.DB) sq.StatementBuilderType {
+	return sq.StatementBuilder.PlaceholderFormat(sq.Dollar).RunWith(c)
 }
 
 func NewStrategyWriter(connection *sql.DB) trader.StrategyWriter {

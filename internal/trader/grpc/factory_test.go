@@ -78,9 +78,9 @@ func TestStrategyFromRequest(t *testing.T) {
 			},
 		}
 
-		plan := &trader.PercentageStakingPlan{
+		plan := trader.StakingPlan{
 			Name:  "PERCENTAGE",
-			Value: 2.5,
+			Number: 2.5,
 		}
 
 		a := assert.New(t)
