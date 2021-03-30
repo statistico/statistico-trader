@@ -27,17 +27,17 @@ func TestStrategyWriter_Insert(t *testing.T) {
 			FilterCount   int8
 		}{
 			{
-				newStrategy("Strategy One", "Strategy Description", uuid.New(), &min, &max),
+				newStrategy("Strategy One", "Strategy Description", uuid.New(), &min, &max, "PUBLIC"),
 				1,
 				2,
 			},
 			{
-				newStrategy("Strategy Two", "Strategy Description", uuid.New(), &min, nil),
+				newStrategy("Strategy Two", "Strategy Description", uuid.New(), &min, nil, "PUBLIC"),
 				2,
 				4,
 			},
 			{
-				newStrategy("Strategy Three", "Strategy Description", uuid.New(), nil, &max),
+				newStrategy("Strategy Three", "Strategy Description", uuid.New(), nil, &max, "PUBLIC"),
 				3,
 				6,
 			},
@@ -84,8 +84,8 @@ func TestStrategyWriter_Insert(t *testing.T) {
 
 		userID := uuid.New()
 
-		stOne := newStrategy("Strategy One", "My Strategy", userID,nil, nil)
-		stTwo := newStrategy("Strategy One", "My Strategy", userID, nil, nil)
+		stOne := newStrategy("Strategy One", "My Strategy", userID,nil, nil, "PUBLIC")
+		stTwo := newStrategy("Strategy One", "My Strategy", userID, nil, nil, "PUBLIC")
 
 		err := repo.Insert(stOne)
 
@@ -109,7 +109,7 @@ func insertStrategy(t *testing.T, repo trader.StrategyWriter, s *trader.Strategy
 	}
 }
 
-func newStrategy(name string, description string, userID uuid.UUID, min, max *float32) *trader.Strategy {
+func newStrategy(name string, description string, userID uuid.UUID, min, max *float32, vis string) *trader.Strategy {
 	return &trader.Strategy{
 		ID:             uuid.New(),
 		Name:           name,
@@ -121,7 +121,7 @@ func newStrategy(name string, description string, userID uuid.UUID, min, max *fl
 		MaxOdds:        max,
 		CompetitionIDs: []uint64{8, 12},
 		Side:           "BACK",
-		Visibility:     "PUBLIC",
+		Visibility:     vis,
 		Status:         "ACTIVE",
 		ResultFilters: []*trader.ResultFilter{
 			{

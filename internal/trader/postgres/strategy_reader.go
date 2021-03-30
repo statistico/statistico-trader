@@ -187,11 +187,11 @@ func buildReaderQuery(db *sql.DB, q *trader.StrategyReaderQuery) sq.SelectBuilde
 	query := builder.Select("strategy.*").From("strategy")
 
 	if q.UserID != nil {
-		query.Where(sq.Eq{"user_id": q.UserID.String()})
+		query = query.Where(sq.Eq{"user_id": q.UserID.String()})
 	}
 
 	if q.Visibility != nil {
-		query.Where(sq.Eq{"visibility": *q.Visibility})
+		query = query.Where(sq.Eq{"visibility": *q.Visibility})
 	}
 
 	if q.OrderBy != nil {
