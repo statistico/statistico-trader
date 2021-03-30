@@ -82,22 +82,22 @@ func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveSt
 	}
 
 	return &statistico.Strategy{
-		Id:                   strategy.ID.String(),
-		Name:                 strategy.Name,
-		Description:          strategy.Description,
-		UserId:               strategy.UserID.String(),
-		Market:               strategy.MarketName,
-		Runner:               strategy.RunnerName,
-		MinOdds:              &wrappers.FloatValue{Value: *strategy.MinOdds},
-		MaxOdds:              &wrappers.FloatValue{Value: *strategy.MaxOdds},
-		CompetitionIds:       strategy.CompetitionIDs,
-		Side:                 statistico.SideEnum(statistico.SideEnum_value[strategy.Side]),
-		Visibility:           statistico.VisibilityEnum(statistico.VisibilityEnum_value[strategy.Visibility]),
-		Status:               statistico.StrategyStatusEnum_ACTIVE,
-		ResultFilters:        r.ResultFilters,
-		StatFilters:          r.StatFilters,
-		CreatedAt:            timestamppb.New(strategy.CreatedAt),
-		UpdatedAt:            timestamppb.New(strategy.UpdatedAt),
+		Id:             strategy.ID.String(),
+		Name:           strategy.Name,
+		Description:    strategy.Description,
+		UserId:         strategy.UserID.String(),
+		Market:         strategy.MarketName,
+		Runner:         strategy.RunnerName,
+		MinOdds:        &wrappers.FloatValue{Value: *strategy.MinOdds},
+		MaxOdds:        &wrappers.FloatValue{Value: *strategy.MaxOdds},
+		CompetitionIds: strategy.CompetitionIDs,
+		Side:           statistico.SideEnum(statistico.SideEnum_value[strategy.Side]),
+		Visibility:     statistico.VisibilityEnum(statistico.VisibilityEnum_value[strategy.Visibility]),
+		Status:         statistico.StrategyStatusEnum_ACTIVE,
+		ResultFilters:  r.ResultFilters,
+		StatFilters:    r.StatFilters,
+		CreatedAt:      timestamppb.New(strategy.CreatedAt),
+		UpdatedAt:      timestamppb.New(strategy.UpdatedAt),
 	}, nil
 }
 
@@ -113,6 +113,6 @@ func NewStrategyService(
 		oddsClient: c,
 		finder:     f,
 		logger:     l,
-		clock:     cl,
+		clock:      cl,
 	}
 }

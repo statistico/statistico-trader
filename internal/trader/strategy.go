@@ -11,7 +11,7 @@ type StrategyReader interface {
 }
 
 type StrategyReaderQuery struct {
-	UserID   *uuid.UUID
-	Visibility  *string
-	OrderBy     *string
+	UserID     *uuid.UUID
+	Visibility *string
+	OrderBy    *string
 }

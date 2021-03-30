@@ -84,7 +84,7 @@ func TestStrategyWriter_Insert(t *testing.T) {
 
 		userID := uuid.New()
 
-		stOne := newStrategy("Strategy One", "My Strategy", userID,nil, nil, "PUBLIC")
+		stOne := newStrategy("Strategy One", "My Strategy", userID, nil, nil, "PUBLIC")
 		stTwo := newStrategy("Strategy One", "My Strategy", userID, nil, nil, "PUBLIC")
 
 		err := repo.Insert(stOne)

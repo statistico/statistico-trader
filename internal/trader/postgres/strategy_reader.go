@@ -138,7 +138,7 @@ func (r *strategyReader) fetchStatFilters(id string) ([]*trader.StatFilter, erro
 
 	rows, err := builder.
 		Select(
-		"stat",
+			"stat",
 			"team",
 			"action",
 			"measure",

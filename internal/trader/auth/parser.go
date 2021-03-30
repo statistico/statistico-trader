@@ -8,7 +8,7 @@ import (
 )
 
 type Token struct {
-	UserID  string
+	UserID string
 }
 
 type TokenParser interface {
@@ -16,15 +16,15 @@ type TokenParser interface {
 }
 
 type awsTokenParser struct {
-	region  string
+	region     string
 	userPoolID string
-	clock jwt.Clock
+	clock      jwt.Clock
 }
 
 func (a *awsTokenParser) Parse(token string) (*Token, error) {
 	url := fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", a.region, a.userPoolID)
 
-	set, err := jwk.Fetch(context.Background(), fmt.Sprintf(url + "/%s", ".well-known/jwks.json"))
+	set, err := jwk.Fetch(context.Background(), fmt.Sprintf(url+"/%s", ".well-known/jwks.json"))
 
 	if err != nil {
 		return nil, &KeySetParseError{err: err}
@@ -49,7 +49,7 @@ func (a *awsTokenParser) Parse(token string) (*Token, error) {
 	}
 
 	return &Token{
-		UserID:  fmt.Sprintf("%v", id),
+		UserID: fmt.Sprintf("%v", id),
 	}, nil
 }
 

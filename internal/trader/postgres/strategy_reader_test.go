@@ -85,7 +85,7 @@ func TestStrategyReader_Get(t *testing.T) {
 
 		query := trader.StrategyReaderQuery{
 			OrderBy: &order,
-			UserID: &userID,
+			UserID:  &userID,
 		}
 
 		s, err := reader.Get(&query)
@@ -127,7 +127,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		visibility := "PUBLIC"
 
 		query := trader.StrategyReaderQuery{
-			OrderBy: &order,
+			OrderBy:    &order,
 			Visibility: &visibility,
 		}
 

@@ -14,15 +14,15 @@ func TestStrategyFromRequest(t *testing.T) {
 		t.Helper()
 
 		r := &statistico.SaveStrategyRequest{
-			Name:                 "Money Maker v1",
-			Description:          "Home favourite strategy",
-			UserId:               "a5f04fd2-dfe7-41c1-af38-d490119705d8",
-			Market:               "MATCH_ODDS",
-			Runner:               "Home",
-			MinOdds:              &wrappers.FloatValue{Value: 1.50},
-			MaxOdds:              &wrappers.FloatValue{Value: 5.25},
-			Side:                 statistico.SideEnum_BACK,
-			CompetitionIds:       []uint64{8, 14},
+			Name:           "Money Maker v1",
+			Description:    "Home favourite strategy",
+			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
+			Market:         "MATCH_ODDS",
+			Runner:         "Home",
+			MinOdds:        &wrappers.FloatValue{Value: 1.50},
+			MaxOdds:        &wrappers.FloatValue{Value: 5.25},
+			Side:           statistico.SideEnum_BACK,
+			CompetitionIds: []uint64{8, 14},
 			ResultFilters: []*statistico.ResultFilter{
 				{
 					Team:   statistico.TeamEnum_HOME_TEAM,
@@ -43,10 +43,10 @@ func TestStrategyFromRequest(t *testing.T) {
 					Venue:   statistico.VenueEnum_AWAY,
 				},
 			},
-			Visibility:           statistico.VisibilityEnum_PRIVATE,
+			Visibility: statistico.VisibilityEnum_PRIVATE,
 			StakingPlan: &statistico.StakingPlan{
-				Name:                 statistico.StakingPlanEnum_PERCENTAGE,
-				Value:                2.5,
+				Name:  statistico.StakingPlanEnum_PERCENTAGE,
+				Value: 2.5,
 			},
 		}
 
@@ -79,7 +79,7 @@ func TestStrategyFromRequest(t *testing.T) {
 		}
 
 		plan := trader.StakingPlan{
-			Name:  "PERCENTAGE",
+			Name:   "PERCENTAGE",
 			Number: 2.5,
 		}
 
@@ -104,16 +104,16 @@ func TestStrategyFromRequest(t *testing.T) {
 		t.Helper()
 
 		r := &statistico.SaveStrategyRequest{
-			Name:                 "Money Maker v1",
-			Description:          "Home favourite strategy",
-			UserId:               "a5f04fd2",
-			Market:               "MATCH_ODDS",
-			Runner:               "Home",
-			MinOdds:              &wrappers.FloatValue{Value: 1.50},
-			MaxOdds:              &wrappers.FloatValue{Value: 5.25},
-			Side:                 statistico.SideEnum_BACK,
-			CompetitionIds:       []uint64{8, 14},
-			Visibility:           statistico.VisibilityEnum_PRIVATE,
+			Name:           "Money Maker v1",
+			Description:    "Home favourite strategy",
+			UserId:         "a5f04fd2",
+			Market:         "MATCH_ODDS",
+			Runner:         "Home",
+			MinOdds:        &wrappers.FloatValue{Value: 1.50},
+			MaxOdds:        &wrappers.FloatValue{Value: 5.25},
+			Side:           statistico.SideEnum_BACK,
+			CompetitionIds: []uint64{8, 14},
+			Visibility:     statistico.VisibilityEnum_PRIVATE,
 		}
 
 		_, err := strategyFromRequest(r, time.Unix(1616936636, 0))
@@ -129,17 +129,17 @@ func TestStrategyFromRequest(t *testing.T) {
 		t.Helper()
 
 		r := &statistico.SaveStrategyRequest{
-			Name:                 "Money Maker v1",
-			Description:          "Home favourite strategy",
-			UserId:               "a5f04fd2-dfe7-41c1-af38-d490119705d8",
-			Market:               "MATCH_ODDS",
-			Runner:               "Home",
-			Side:                 statistico.SideEnum_BACK,
-			CompetitionIds:       []uint64{8, 14},
-			Visibility:           statistico.VisibilityEnum_PRIVATE,
+			Name:           "Money Maker v1",
+			Description:    "Home favourite strategy",
+			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
+			Market:         "MATCH_ODDS",
+			Runner:         "Home",
+			Side:           statistico.SideEnum_BACK,
+			CompetitionIds: []uint64{8, 14},
+			Visibility:     statistico.VisibilityEnum_PRIVATE,
 			StakingPlan: &statistico.StakingPlan{
-				Name:                 statistico.StakingPlanEnum_PERCENTAGE,
-				Value:                2.5,
+				Name:  statistico.StakingPlanEnum_PERCENTAGE,
+				Value: 2.5,
 			},
 		}
 
@@ -156,15 +156,15 @@ func TestStrategyFromRequest(t *testing.T) {
 		t.Helper()
 
 		r := &statistico.SaveStrategyRequest{
-			Name:                 "Money Maker v1",
-			Description:          "Home favourite strategy",
-			UserId:               "a5f04fd2-dfe7-41c1-af38-d490119705d8",
-			Market:               "MATCH_ODDS",
-			Runner:               "Home",
-			MinOdds:              &wrappers.FloatValue{Value: 1.50},
-			MaxOdds:              &wrappers.FloatValue{Value: 5.25},
-			Side:                 statistico.SideEnum_BACK,
-			CompetitionIds:       []uint64{8, 14},
+			Name:           "Money Maker v1",
+			Description:    "Home favourite strategy",
+			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
+			Market:         "MATCH_ODDS",
+			Runner:         "Home",
+			MinOdds:        &wrappers.FloatValue{Value: 1.50},
+			MaxOdds:        &wrappers.FloatValue{Value: 5.25},
+			Side:           statistico.SideEnum_BACK,
+			CompetitionIds: []uint64{8, 14},
 			ResultFilters: []*statistico.ResultFilter{
 				{
 					Team:   statistico.TeamEnum_HOME_TEAM,
@@ -185,10 +185,10 @@ func TestStrategyFromRequest(t *testing.T) {
 					Venue:   statistico.VenueEnum_AWAY,
 				},
 			},
-			Visibility:           statistico.VisibilityEnum_PRIVATE,
+			Visibility: statistico.VisibilityEnum_PRIVATE,
 			StakingPlan: &statistico.StakingPlan{
-				Name:                 statistico.StakingPlanEnum_PERCENTAGE,
-				Value:                0,
+				Name:  statistico.StakingPlanEnum_PERCENTAGE,
+				Value: 0,
 			},
 		}
 

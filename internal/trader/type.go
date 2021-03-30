@@ -47,8 +47,8 @@ type StatFilter struct {
 }
 
 type StakingPlan struct {
-	Name   string   `json:"name"`
-	Number float32  `json:"value"`
+	Name   string  `json:"name"`
+	Number float32 `json:"value"`
 }
 
 func (s StakingPlan) Value() (driver.Value, error) {
