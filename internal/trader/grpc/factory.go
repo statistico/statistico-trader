@@ -42,7 +42,7 @@ func strategyFromRequest(r *statistico.SaveStrategyRequest, t time.Time) (*trade
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	strategy.StakingPlan = *plan
+	strategy.StakingPlan = plan
 
 	if r.GetMinOdds() == nil && r.GetMaxOdds() == nil {
 		return nil, status.Error(codes.InvalidArgument, "Min and max odds cannot both be nil")
@@ -59,16 +59,16 @@ func strategyFromRequest(r *statistico.SaveStrategyRequest, t time.Time) (*trade
 	return &strategy, nil
 }
 
-func parseStakingPlan(s *statistico.StakingPlan) (*trader.StakingPlan, error) {
+func parseStakingPlan(s *statistico.StakingPlan) (trader.StakingPlan, error) {
 	if s.Name.String() != "PERCENTAGE" {
-		return nil, fmt.Errorf("staking plan '%s' is not supported", s.Name)
+		return trader.StakingPlan{}, fmt.Errorf("staking plan '%s' is not supported", s.Name)
 	}
 
 	if s.Value <= 0 {
-		return nil, errors.New("staking plan must be greater than zero")
+		return trader.StakingPlan{}, errors.New("staking plan must be greater than zero")
 	}
 
-	return &trader.StakingPlan{
+	return trader.StakingPlan{
 		Name:  s.Name.String(),
 		Number: s.Value,
 	}, nil
