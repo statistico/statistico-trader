@@ -8,8 +8,9 @@ require (
 	github.com/evalphobia/logrus_sentry v0.8.2
 	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/goccy/go-json v0.4.9 // indirect
-	github.com/golang/protobuf v1.5.1
+	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.2.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/lestrrat-go/jwx v1.1.6
 	github.com/lib/pq v1.10.0
@@ -19,9 +20,8 @@ require (
 	github.com/statistico/statistico-proto/go v0.0.0-20210329082303-a804d299cddc
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/net v0.0.0-20210326220855-61e056675ecf // indirect
-	golang.org/x/sys v0.0.0-20210326220804-49726bf1d181 // indirect
-	google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210 // indirect
+	golang.org/x/net v0.0.0-20210331060903-cb1fcc7394e5 // indirect
+	google.golang.org/genproto v0.0.0-20210330181207-2295ebbda0c6 // indirect
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
