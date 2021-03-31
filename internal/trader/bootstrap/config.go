@@ -3,10 +3,16 @@ package bootstrap
 import "os"
 
 type Config struct {
+	AWS
 	Database
 	Sentry
 	StatisticoDataService
 	StatisticoOddsWarehouseService
+}
+
+type AWS struct {
+	Region  string
+	CognitoUserPoolID string
 }
 
 type Database struct {
@@ -34,6 +40,11 @@ type StatisticoOddsWarehouseService struct {
 
 func BuildConfig() *Config {
 	config := Config{}
+
+	config.AWS = AWS{
+		Region:            os.Getenv("AWS_REGION"),
+		CognitoUserPoolID: os.Getenv("AWS_USER_POOL_ID"),
+	}
 
 	config.Database = Database{
 		Driver:   os.Getenv("DB_DRIVER"),
