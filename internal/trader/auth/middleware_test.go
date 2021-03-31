@@ -1,15 +1,19 @@
 package auth_test
 
 import (
+	"context"
+	"fmt"
+	"github.com/grpc-ecosystem/go-grpc-middleware/util/metautils"
 	"github.com/statistico/statistico-strategy/internal/trader/auth"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc/metadata"
 	"os"
 	"testing"
 	"time"
 )
 
-func TestAwsTokenParser_Parse(t *testing.T) {
-	t.Run("parses token from JWT string", func(t *testing.T) {
+func TestAwsTokenAuthoriser_Authorise(t *testing.T) {
+	t.Run("authorises token from JWT string and attached user id to context", func(t *testing.T) {
 		t.Helper()
 
 		region := os.Getenv("AWS_REGION")
@@ -21,7 +25,7 @@ func TestAwsTokenParser_Parse(t *testing.T) {
 
 		clock := MockClock{t: time.Unix(1617126949, 0)}
 
-		parser := auth.NewAwsTokenParser(region, userPoolID, clock)
+		authoriser := auth.NewAwsTokenAuthoriser(region, userPoolID, clock)
 
 		token := "eyJraWQiOiJMWVpcL1RjK0V3S2xtQ2hcL1czcnRVRHA3bkR0Z3Rwbm04UHI3MUpYSHEzT0E9IiwiYWxnIjoiUlMyNTYifQ." +
 			"eyJzdWIiOiI5MDRlMDNmYi1iYTAxLTQ1YjAtYWI2Ni0wMWE0ZDIyYTM2YjgiLCJldmVudF9pZCI6ImE4MmNkNjVkLTVmMzktNGVlMi1h" +
@@ -34,32 +38,52 @@ func TestAwsTokenParser_Parse(t *testing.T) {
 			"NmBE_qlMG4IGdhN46Wh6A8WBMe2MVf9Txz-KT7YYOzq_G8Seyy-RblqKYgg31ERFGwCby7YsOTSt28iI7VMe3fY71evJuI-2XUDaE7Hu" +
 			"--iUr5XxLWQ7YAv_n9rKVyBsQpGEShgrUdcOTcR6Hmdv0XTpt0N5eXtRCi0QVWu5ihi1dTr_Zk61Q"
 
-		tn, err := parser.Parse(token)
+		ctx := ctxWithToken(context.Background(), "bearer", token)
+
+		newCtx, err := authoriser.Authorise(ctx)
 
 		if err != nil {
 			t.Fatalf("Expected nil, got %s", err.Error())
 		}
 
-		assert.Equal(t, "904e03fb-ba01-45b0-ab66-01a4d22a36b8", tn.UserID)
+		assert.Equal(t, "904e03fb-ba01-45b0-ab66-01a4d22a36b8", newCtx.Value("userID"))
 	})
 
-	t.Run("returns KeySetParseError error if unable to parse key set", func(t *testing.T) {
+	t.Run("returns unauthenticated error if unable to parse token from context", func(t *testing.T) {
 		t.Helper()
 
 		clock := MockClock{t: time.Unix(1617126949, 0)}
 
-		parser := auth.NewAwsTokenParser("eu-west-1", "invalid-id", clock)
+		authoriser := auth.NewAwsTokenAuthoriser("eu-west-1", "not-needed-for-test", clock)
 
-		_, err := parser.Parse("token")
+		_, err := authoriser.Authorise(context.Background())
 
 		if err == nil {
 			t.Fatalf("Expected error, got nil")
 		}
 
-		assert.Equal(t, "error parsing key set from JWT provider: failed to fetch remote JWK (status = 400)", err.Error())
+		assert.Equal(t, "rpc error: code = Unauthenticated desc = Request unauthenticated with bearer", err.Error())
 	})
 
-	t.Run("returns TokenValidationError if token provided is invalid", func(t *testing.T) {
+	t.Run("returns internal server error if unable to parse key set", func(t *testing.T) {
+		t.Helper()
+
+		clock := MockClock{t: time.Unix(1617126949, 0)}
+
+		authoriser := auth.NewAwsTokenAuthoriser("eu-west-1", "invalid-id", clock)
+
+		ctx := ctxWithToken(context.Background(), "bearer", "fake-token")
+
+		_, err := authoriser.Authorise(ctx)
+
+		if err == nil {
+			t.Fatalf("Expected error, got nil")
+		}
+
+		assert.Equal(t, "rpc error: code = Internal desc = internal server error", err.Error())
+	})
+
+	t.Run("returns unauthenticated error if if token provided is invalid", func(t *testing.T) {
 		t.Helper()
 
 		region := os.Getenv("AWS_REGION")
@@ -71,7 +95,7 @@ func TestAwsTokenParser_Parse(t *testing.T) {
 
 		clock := MockClock{t: time.Unix(1617126949, 0)}
 
-		parser := auth.NewAwsTokenParser(region, userPoolID, clock)
+		authoriser := auth.NewAwsTokenAuthoriser(region, userPoolID, clock)
 
 		token := "eyJraWQiOiJMWVpcL1RjK0V3S2xtQ2hcL1czcnRVRHA3bkR0Z3Rwbm04UHI3MUpYSHEzT0E9IiwiYWxnIjoiUlMyNTYifQ." +
 			"eyJzdWIiOiI5MDRlMDNmYi1iYTAxLTQ1YjAtYWI2Ni0wMWE0ZDIyYTM2YjgiLCJldmVudF9pZCI6ImE4MmNkNjVkLTVmMzktNGVlMi1h" +
@@ -83,7 +107,9 @@ func TestAwsTokenParser_Parse(t *testing.T) {
 			"KQXx38-gR2iKfGtPXxLR-uEh86IV2gKmIrrN3-fSyzmLCyEUlVp-ntkTZVss2HA_PIwHUZCRXF54Y350KXBzoFvaex7VPfd7wRM6I5U2" +
 			"NmBE_qlMG4IGdhN46Wh6A8WBMe2MVf9Txz-KT7YYOzq_G8Seyy-RblqKYgg31ERFGwCby7YsOTSt28iI7VMe3fY71evJuI-2XUDaE7Hu"
 
-		_, err := parser.Parse(token)
+		ctx := ctxWithToken(context.Background(), "bearer", token)
+
+		_, err := authoriser.Authorise(ctx)
 
 		if err == nil {
 			t.Fatalf("Expected error, got nil")
@@ -91,7 +117,7 @@ func TestAwsTokenParser_Parse(t *testing.T) {
 
 		assert.Equal(
 			t,
-			"error validating token: failed to find matching key for verification: failed to parse token data: failed to decode signature: failed to decode source: illegal base64 data at input byte 264",
+			"rpc error: code = Unauthenticated desc = invalid auth token: failed to find matching key for verification: failed to parse token data: failed to decode signature: failed to decode source: illegal base64 data at input byte 264",
 			err.Error(),
 		)
 	})
@@ -103,4 +129,10 @@ type MockClock struct {
 
 func (m MockClock) Now() time.Time {
 	return m.t
+}
+
+func ctxWithToken(ctx context.Context, scheme string, token string) context.Context {
+	md := metadata.Pairs("authorization", fmt.Sprintf("%s %v", scheme, token))
+	nCtx := metautils.NiceMD(md).ToIncoming(ctx)
+	return nCtx
 }
