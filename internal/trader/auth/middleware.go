@@ -6,11 +6,12 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jwt"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-type Authoriser interface {
+type TokenAuthoriser interface {
 	Authorise(ctx context.Context) (context.Context, error)
 }
 
@@ -18,6 +19,7 @@ type awsTokenAuthoriser struct {
 	region     string
 	userPoolID string
 	clock      jwt.Clock
+	logger     *logrus.Logger
 }
 
 func (a *awsTokenAuthoriser) Authorise(ctx context.Context) (context.Context, error) {
@@ -32,6 +34,8 @@ func (a *awsTokenAuthoriser) Authorise(ctx context.Context) (context.Context, er
 	set, err := jwk.Fetch(context.Background(), fmt.Sprintf(url+"/%s", ".well-known/jwks.json"))
 
 	if err != nil {
+		a.logger.Errorf("error fetching key set from aws: %s", err.Error())
+
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
@@ -58,10 +62,11 @@ func (a *awsTokenAuthoriser) Authorise(ctx context.Context) (context.Context, er
 	return newCtx, nil
 }
 
-func NewAwsTokenAuthoriser(region, userPoolID string, clock jwt.Clock) Authoriser {
+func NewAwsTokenAuthoriser(region, userPoolID string, clock jwt.Clock, logger *logrus.Logger) TokenAuthoriser {
 	return &awsTokenAuthoriser{
 		region:     region,
 		userPoolID: userPoolID,
 		clock:      clock,
+		logger:     logger,
 	}
 }

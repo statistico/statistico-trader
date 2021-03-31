@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/grpc-ecosystem/go-grpc-middleware/util/metautils"
+	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/statistico/statistico-strategy/internal/trader/auth"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/metadata"
@@ -13,7 +14,7 @@ import (
 )
 
 func TestAwsTokenAuthoriser_Authorise(t *testing.T) {
-	t.Run("authorises token from JWT string and attached user id to context", func(t *testing.T) {
+	t.Run("authorises token from JWT string and attaches user id to context", func(t *testing.T) {
 		t.Helper()
 
 		region := os.Getenv("AWS_REGION")
@@ -24,8 +25,9 @@ func TestAwsTokenAuthoriser_Authorise(t *testing.T) {
 		}
 
 		clock := MockClock{t: time.Unix(1617126949, 0)}
+		logger, _ := test.NewNullLogger()
 
-		authoriser := auth.NewAwsTokenAuthoriser(region, userPoolID, clock)
+		authoriser := auth.NewAwsTokenAuthoriser(region, userPoolID, clock, logger)
 
 		token := "eyJraWQiOiJMWVpcL1RjK0V3S2xtQ2hcL1czcnRVRHA3bkR0Z3Rwbm04UHI3MUpYSHEzT0E9IiwiYWxnIjoiUlMyNTYifQ." +
 			"eyJzdWIiOiI5MDRlMDNmYi1iYTAxLTQ1YjAtYWI2Ni0wMWE0ZDIyYTM2YjgiLCJldmVudF9pZCI6ImE4MmNkNjVkLTVmMzktNGVlMi1h" +
@@ -53,8 +55,9 @@ func TestAwsTokenAuthoriser_Authorise(t *testing.T) {
 		t.Helper()
 
 		clock := MockClock{t: time.Unix(1617126949, 0)}
+		logger, _ := test.NewNullLogger()
 
-		authoriser := auth.NewAwsTokenAuthoriser("eu-west-1", "not-needed-for-test", clock)
+		authoriser := auth.NewAwsTokenAuthoriser("eu-west-1", "not-needed-for-test", clock, logger)
 
 		_, err := authoriser.Authorise(context.Background())
 
@@ -69,8 +72,9 @@ func TestAwsTokenAuthoriser_Authorise(t *testing.T) {
 		t.Helper()
 
 		clock := MockClock{t: time.Unix(1617126949, 0)}
+		logger, _ := test.NewNullLogger()
 
-		authoriser := auth.NewAwsTokenAuthoriser("eu-west-1", "invalid-id", clock)
+		authoriser := auth.NewAwsTokenAuthoriser("eu-west-1", "invalid-id", clock, logger)
 
 		ctx := ctxWithToken(context.Background(), "bearer", "fake-token")
 
@@ -94,8 +98,9 @@ func TestAwsTokenAuthoriser_Authorise(t *testing.T) {
 		}
 
 		clock := MockClock{t: time.Unix(1617126949, 0)}
+		logger, _ := test.NewNullLogger()
 
-		authoriser := auth.NewAwsTokenAuthoriser(region, userPoolID, clock)
+		authoriser := auth.NewAwsTokenAuthoriser(region, userPoolID, clock, logger)
 
 		token := "eyJraWQiOiJMWVpcL1RjK0V3S2xtQ2hcL1czcnRVRHA3bkR0Z3Rwbm04UHI3MUpYSHEzT0E9IiwiYWxnIjoiUlMyNTYifQ." +
 			"eyJzdWIiOiI5MDRlMDNmYi1iYTAxLTQ1YjAtYWI2Ni0wMWE0ZDIyYTM2YjgiLCJldmVudF9pZCI6ImE4MmNkNjVkLTVmMzktNGVlMi1h" +
