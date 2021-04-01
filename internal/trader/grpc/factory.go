@@ -82,15 +82,13 @@ func strategyReaderQuery(ctx context.Context, r *statistico.ListUserStrategiesRe
 }
 
 func convertToStatisticoStrategy(s *trader.Strategy) *statistico.Strategy {
-	return &statistico.Strategy{
+	st := statistico.Strategy{
 		Id:             s.ID.String(),
 		Name:           s.Name,
 		Description:    s.Description,
 		UserId:         s.UserID.String(),
 		Market:         s.MarketName,
 		Runner:         s.RunnerName,
-		MinOdds:        &wrappers.FloatValue{Value: *s.MinOdds},
-		MaxOdds:        &wrappers.FloatValue{Value: *s.MaxOdds},
 		CompetitionIds: s.CompetitionIDs,
 		Side:           statistico.SideEnum(statistico.SideEnum_value[s.Side]),
 		Visibility:     statistico.VisibilityEnum(statistico.VisibilityEnum_value[s.Visibility]),
@@ -100,6 +98,16 @@ func convertToStatisticoStrategy(s *trader.Strategy) *statistico.Strategy {
 		CreatedAt:      timestamppb.New(s.CreatedAt),
 		UpdatedAt:      timestamppb.New(s.UpdatedAt),
 	}
+
+	if s.MinOdds != nil {
+		st.MinOdds = &wrappers.FloatValue{Value: *s.MinOdds}
+	}
+
+	if s.MaxOdds != nil {
+		st.MaxOdds = &wrappers.FloatValue{Value: *s.MaxOdds}
+	}
+
+	return &st
 }
 
 func convertResultFilters(f []*trader.ResultFilter) []*statistico.ResultFilter {
