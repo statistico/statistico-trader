@@ -75,6 +75,6 @@ type Trade struct {
 	EventID     uint64    `json:"eventId"`
 	EventDate   time.Time `json:"eventDate"`
 	Side        string    `json:"side"`
-	Result      string    `json:"result,omitempty"`
+	Status      string    `json:"status"`
 	Timestamp   time.Time `json:"timestamp"`
 }

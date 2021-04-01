@@ -11,7 +11,7 @@ CREATE TABLE trade (
     event_id INTEGER NOT NULL,
     event_date INTEGER NOT NULL,
     side VARCHAR NOT NULL,
-    result VARCHAR NOT NULL,
+    status VARCHAR NOT NULL,
     timestamp INTEGER NOT NULL
 );
 

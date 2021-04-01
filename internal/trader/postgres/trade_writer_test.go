@@ -58,7 +58,7 @@ func insertTrade(t *testing.T, w trader.TradeWriter, tr *trader.Trade) {
 	}
 }
 
-func newTrade(strategyID uuid.UUID, result string) *trader.Trade {
+func newTrade(strategyID uuid.UUID, status string) *trader.Trade {
 	return &trader.Trade{
 		ID:          uuid.New(),
 		StrategyID:  strategyID,
@@ -70,7 +70,7 @@ func newTrade(strategyID uuid.UUID, result string) *trader.Trade {
 		EventID:     281781,
 		EventDate:   time.Now(),
 		Side:        "BACK",
-		Result:      result,
+		Status:      status,
 		Timestamp:   time.Now(),
 	}
 }

@@ -16,6 +16,7 @@ func (w *TradeWriter) Insert(t *trader.Trade) error {
 		Insert("trade").
 		Columns(
 			"id",
+			"exchange",
 			"exchange_ref",
 			"strategy_id",
 			"market",
@@ -24,12 +25,12 @@ func (w *TradeWriter) Insert(t *trader.Trade) error {
 			"event_id",
 			"event_date",
 			"side",
-			"exchange",
-			"result",
+			"status",
 			"timestamp",
 		).
 		Values(
 			t.ID.String(),
+			t.Exchange,
 			t.ExchangeRef,
 			t.StrategyID.String(),
 			t.Market,
@@ -38,8 +39,7 @@ func (w *TradeWriter) Insert(t *trader.Trade) error {
 			t.EventID,
 			t.EventDate.Unix(),
 			t.Side,
-			t.Exchange,
-			t.Result,
+			t.Status,
 			t.Timestamp.Unix(),
 		).Exec()
 
