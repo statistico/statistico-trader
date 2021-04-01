@@ -190,6 +190,24 @@ func buildReaderQuery(db *sql.DB, q *trader.StrategyReaderQuery) sq.SelectBuilde
 		query = query.Where(sq.Eq{"user_id": q.UserID.String()})
 	}
 
+	if q.Market != nil {
+		query = query.Where(sq.Eq{"market": *q.Market})
+	}
+
+	if q.Runner != nil {
+		query = query.Where(sq.Eq{"runner": *q.Runner})
+	}
+
+	if q.Price != nil {
+		query = query.
+			Where(sq.GtOrEq{"max_odds": *q.Price}).
+			Where(sq.LtOrEq{"min_odds": *q.Price})
+	}
+
+	if q.CompetitionID != nil {
+		query = query.Where(" = ANY(competition_ids)?", *q.CompetitionID)
+	}
+
 	if q.Visibility != nil {
 		query = query.Where(sq.Eq{"visibility": *q.Visibility})
 	}
