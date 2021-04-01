@@ -12,6 +12,12 @@ type StrategyReader interface {
 
 type StrategyReaderQuery struct {
 	UserID     *uuid.UUID
+	Market     *string
+	Runner     *string
+	Price      *float32
+	CompetitionID *uint64
+	Side       *string
+	Status     *string
 	Visibility *string
 	OrderBy    *string
 }

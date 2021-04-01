@@ -20,6 +20,7 @@ func TestStrategyWriter_Insert(t *testing.T) {
 
 		min := float32(1.50)
 		max := float32(2.50)
+		compIDs := []uint64{8, 12}
 
 		strategyCounts := []struct {
 			Strategy      *trader.Strategy
@@ -27,17 +28,17 @@ func TestStrategyWriter_Insert(t *testing.T) {
 			FilterCount   int8
 		}{
 			{
-				newStrategy("Strategy One", "Strategy Description", uuid.New(), &min, &max, "PUBLIC"),
+				newStrategy("Strategy One", "Strategy Description", uuid.New(), &min, &max, "MATCH_ODDS", "Home", "BACK", "ACTIVE", "PUBLIC", compIDs),
 				1,
 				2,
 			},
 			{
-				newStrategy("Strategy Two", "Strategy Description", uuid.New(), &min, nil, "PUBLIC"),
+				newStrategy("Strategy Two", "Strategy Description", uuid.New(), &min, nil,"MATCH_ODDS", "Home", "BACK", "ACTIVE", "PUBLIC", compIDs),
 				2,
 				4,
 			},
 			{
-				newStrategy("Strategy Three", "Strategy Description", uuid.New(), nil, &max, "PUBLIC"),
+				newStrategy("Strategy Three", "Strategy Description", uuid.New(), nil, &max, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", compIDs),
 				3,
 				6,
 			},
@@ -84,8 +85,8 @@ func TestStrategyWriter_Insert(t *testing.T) {
 
 		userID := uuid.New()
 
-		stOne := newStrategy("Strategy One", "My Strategy", userID, nil, nil, "PUBLIC")
-		stTwo := newStrategy("Strategy One", "My Strategy", userID, nil, nil, "PUBLIC")
+		stOne := newStrategy("Strategy One", "My Strategy", userID, nil, nil,"MATCH_ODDS", "Home", "BACK", "ACTIVE", "PUBLIC", []uint64{8, 12})
+		stTwo := newStrategy("Strategy One", "My Strategy", userID, nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12})
 
 		err := repo.Insert(stOne)
 
@@ -109,20 +110,32 @@ func insertStrategy(t *testing.T, repo trader.StrategyWriter, s *trader.Strategy
 	}
 }
 
-func newStrategy(name string, description string, userID uuid.UUID, min, max *float32, vis string) *trader.Strategy {
+func newStrategy(
+	name string,
+	description string,
+	userID uuid.UUID,
+	min,
+	max *float32,
+	market,
+	runner,
+	side,
+	status,
+	vis string,
+	compIDs []uint64,
+) *trader.Strategy {
 	return &trader.Strategy{
 		ID:             uuid.New(),
 		Name:           name,
 		Description:    description,
 		UserID:         userID,
-		MarketName:     "MATCH_ODDS",
-		RunnerName:     "Home",
+		MarketName:     market,
+		RunnerName:     runner,
 		MinOdds:        min,
 		MaxOdds:        max,
-		CompetitionIDs: []uint64{8, 12},
-		Side:           "BACK",
+		CompetitionIDs: compIDs,
+		Side:           side,
 		Visibility:     vis,
-		Status:         "ACTIVE",
+		Status:         status,
 		ResultFilters: []*trader.ResultFilter{
 			{
 				Team:   "HOME",

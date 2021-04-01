@@ -25,13 +25,13 @@ func TestStrategyReader_Get(t *testing.T) {
 			Strategy *trader.Strategy
 		}{
 			{
-				newStrategy("Strategy A", "First Strategy", uuid.New(), &min, &max, "PUBLIC"),
+				newStrategy("Strategy A", "First Strategy", uuid.New(), &min, &max, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
 			},
 			{
-				newStrategy("Strategy B", "Second Strategy", uuid.New(), &min, nil, "PUBLIC"),
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), &min, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
 			},
 			{
-				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, &max, "PUBLIC"),
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, &max, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
 			},
 		}
 
@@ -65,13 +65,13 @@ func TestStrategyReader_Get(t *testing.T) {
 			Strategy *trader.Strategy
 		}{
 			{
-				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "PUBLIC"),
+				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
 			},
 			{
-				newStrategy("Strategy B", "Second Strategy", userID, nil, nil, "PUBLIC"),
+				newStrategy("Strategy B", "Second Strategy", userID, nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
 			},
 			{
-				newStrategy("Strategy C", "Third Strategy", userID, nil, nil, "PUBLIC"),
+				newStrategy("Strategy C", "Third Strategy", userID, nil, nil,"MATCH_ODDS", "Home", "BACK", "ACTIVE", "PUBLIC", []uint64{8, 12}),
 			},
 		}
 
@@ -107,13 +107,13 @@ func TestStrategyReader_Get(t *testing.T) {
 			Strategy *trader.Strategy
 		}{
 			{
-				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "PUBLIC"),
+				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
 			},
 			{
-				newStrategy("Strategy B", "Second Strategy", uuid.New(), nil, nil, "PUBLIC"),
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
 			},
 			{
-				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, nil, "PRIVATE"),
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PRIVATE", []uint64{8, 12}),
 			},
 		}
 
@@ -140,6 +140,343 @@ func TestStrategyReader_Get(t *testing.T) {
 		assert.Equal(t, 2, len(s))
 		assertStrategy(t, st[0].Strategy, s[0])
 		assertStrategy(t, st[1].Strategy, s[1])
+	})
+
+	t.Run("strategies can be filtered by Competition ID", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		st := []struct {
+			Strategy *trader.Strategy
+		}{
+			{
+				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
+			},
+			{
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{5}),
+			},
+			{
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PRIVATE", []uint64{8, 5}),
+			},
+		}
+
+		for _, s := range st {
+			if err := writer.Insert(s.Strategy); err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+		}
+
+		strategyCounts := []struct{
+			CompetitionID uint64
+			Count  int
+		} {
+			{
+				8,
+				2,
+			},
+			{
+				5,
+				2,
+			},
+			{
+				12,
+				1,
+			},
+			{
+				66,
+				0,
+			},
+		}
+
+		for _, sc := range strategyCounts {
+			query := trader.StrategyReaderQuery{CompetitionID: &sc.CompetitionID}
+
+			s, err := reader.Get(&query)
+
+			if err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+
+			assert.Equal(t, sc.Count, len(s))
+		}
+	})
+
+	t.Run("strategies can be filtered by side", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		st := []struct {
+			Strategy *trader.Strategy
+		}{
+			{
+				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
+			},
+			{
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "LAY", "ACTIVE","PUBLIC", []uint64{5}),
+			},
+			{
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PRIVATE", []uint64{8, 5}),
+			},
+		}
+
+		for _, s := range st {
+			if err := writer.Insert(s.Strategy); err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+		}
+
+		strategyCounts := []struct{
+			Side string
+			Count  int
+		} {
+			{
+				"BACK",
+				2,
+			},
+			{
+				"LAY",
+				1,
+			},
+		}
+
+		for _, sc := range strategyCounts {
+			query := trader.StrategyReaderQuery{Side: &sc.Side}
+
+			s, err := reader.Get(&query)
+
+			if err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+
+			assert.Equal(t, sc.Count, len(s))
+		}
+	})
+
+	t.Run("strategies can be filtered by market", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		st := []struct {
+			Strategy *trader.Strategy
+		}{
+			{
+				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
+			},
+			{
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "LAY", "ACTIVE","PUBLIC", []uint64{5}),
+			},
+			{
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, nil, "OVER_UNDER_25", "Home", "BACK", "ACTIVE","PRIVATE", []uint64{8, 5}),
+			},
+		}
+
+		for _, s := range st {
+			if err := writer.Insert(s.Strategy); err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+		}
+
+		strategyCounts := []struct{
+			Market string
+			Count  int
+		} {
+			{
+				"MATCH_ODDS",
+				2,
+			},
+			{
+				"OVER_UNDER_25",
+				1,
+			},
+			{
+				"OVER_UNDER_35",
+				0,
+			},
+		}
+
+		for _, sc := range strategyCounts {
+			query := trader.StrategyReaderQuery{Market: &sc.Market}
+
+			s, err := reader.Get(&query)
+
+			if err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+
+			assert.Equal(t, sc.Count, len(s))
+		}
+	})
+
+	t.Run("strategies can be filtered by runner", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		st := []struct {
+			Strategy *trader.Strategy
+		}{
+			{
+				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Away", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
+			},
+			{
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Away", "LAY", "ACTIVE","PUBLIC", []uint64{5}),
+			},
+			{
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, nil, "OVER_UNDER_25", "Home", "BACK", "ACTIVE","PRIVATE", []uint64{8, 5}),
+			},
+		}
+
+		for _, s := range st {
+			if err := writer.Insert(s.Strategy); err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+		}
+
+		strategyCounts := []struct{
+			Runner string
+			Count  int
+		} {
+			{
+				"Away",
+				2,
+			},
+			{
+				"Home",
+				1,
+			},
+			{
+				"Draw",
+				0,
+			},
+		}
+
+		for _, sc := range strategyCounts {
+			query := trader.StrategyReaderQuery{Runner: &sc.Runner}
+
+			s, err := reader.Get(&query)
+
+			if err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+
+			assert.Equal(t, sc.Count, len(s))
+		}
+	})
+
+	t.Run("strategies can be filtered by status", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		st := []struct {
+			Strategy *trader.Strategy
+		}{
+			{
+				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Away", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
+			},
+			{
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Away", "LAY", "ARCHIVED","PUBLIC", []uint64{5}),
+			},
+			{
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), nil, nil, "OVER_UNDER_25", "Home", "BACK", "ACTIVE","PRIVATE", []uint64{8, 5}),
+			},
+		}
+
+		for _, s := range st {
+			if err := writer.Insert(s.Strategy); err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+		}
+
+		strategyCounts := []struct{
+			Status string
+			Count  int
+		} {
+			{
+				"ARCHIVED",
+				1,
+			},
+			{
+				"ACTIVE",
+				2,
+			},
+		}
+
+		for _, sc := range strategyCounts {
+			query := trader.StrategyReaderQuery{Status: &sc.Status}
+
+			s, err := reader.Get(&query)
+
+			if err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+
+			assert.Equal(t, sc.Count, len(s))
+		}
+	})
+
+	t.Run("strategies can be filtered by price", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		min := float32(1.50)
+		max := float32(3.30)
+
+		st := []struct {
+			Strategy *trader.Strategy
+		}{
+			{
+				newStrategy("Strategy A", "First Strategy", uuid.New(), &min, &max, "MATCH_ODDS", "Away", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
+			},
+			{
+				newStrategy("Strategy B", "Second Strategy", uuid.New(), &min, nil, "MATCH_ODDS", "Away", "LAY", "ARCHIVED","PUBLIC", []uint64{5}),
+			},
+			{
+				newStrategy("Strategy C", "Third Strategy", uuid.New(), &max, nil, "OVER_UNDER_25", "Home", "BACK", "ACTIVE","PRIVATE", []uint64{8, 5}),
+			},
+		}
+
+		for _, s := range st {
+			if err := writer.Insert(s.Strategy); err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+		}
+
+		strategyCounts := []struct{
+			Price float32
+			Count  int
+		} {
+			{
+				2.50,
+				2,
+			},
+			{
+				5.00,
+				2,
+			},
+			{
+				1.25,
+				0,
+			},
+			{
+				1.65,
+				2,
+			},
+			{
+				3.25,
+				2,
+			},
+		}
+
+		for _, sc := range strategyCounts {
+			query := trader.StrategyReaderQuery{Price: &sc.Price}
+
+			s, err := reader.Get(&query)
+
+			if err != nil {
+				t.Fatalf("Expected nil, got %s", err.Error())
+			}
+
+			assert.Equal(t, sc.Count, len(s))
+		}
 	})
 }
 
