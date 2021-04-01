@@ -49,3 +49,7 @@ func (w *TradeWriter) Insert(t *trader.Trade) error {
 
 	return nil
 }
+
+func NewTradeWriter(connection *sql.DB) trader.TradeWriter {
+	return &TradeWriter{connection: connection}
+}

@@ -67,8 +67,8 @@ func (s *StakingPlan) Scan(value interface{}) error {
 type Trade struct {
 	ID          uuid.UUID `json:"id"`
 	StrategyID  uuid.UUID `json:"strategyId"`
-	ExchangeRef string    `json:"exchangeRef"`
 	Exchange    string    `json:"exchange"`
+	ExchangeRef string    `json:"exchangeRef"`
 	Market      string    `json:"market"`
 	Runner      string    `json:"runner"`
 	Price       float32   `json:"price"`
