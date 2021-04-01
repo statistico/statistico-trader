@@ -65,16 +65,16 @@ func (s *StakingPlan) Scan(value interface{}) error {
 }
 
 type Trade struct {
-	ID            uuid.UUID `json:"id"`
-	ExchangeRef   string    `json:"exchangeRef"`
-	StrategyID    uuid.UUID  `json:"strategyId"`
-	MarketName    string    `json:"marketName"`
-	RunnerName    string    `json:"runnerName"`
-	RunnerPrice   float32   `json:"runnerPrice"`
-	EventId       uint64    `json:"eventId"`
-	EventDate     time.Time `json:"eventDate"`
-	Side          string    `json:"side"`
-	Exchange      string    `json:"exchange"`
-	Result        string   `json:"result,omitempty"`
-	Timestamp     time.Time  `json:"timestamp"`
+	ID          uuid.UUID `json:"id"`
+	StrategyID  uuid.UUID `json:"strategyId"`
+	ExchangeRef string    `json:"exchangeRef"`
+	Exchange    string    `json:"exchange"`
+	Market      string    `json:"market"`
+	Runner      string    `json:"runner"`
+	Price       float32   `json:"price"`
+	EventID     uint64    `json:"eventId"`
+	EventDate   time.Time `json:"eventDate"`
+	Side        string    `json:"side"`
+	Result      string    `json:"result,omitempty"`
+	Timestamp   time.Time `json:"timestamp"`
 }
