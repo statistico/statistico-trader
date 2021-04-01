@@ -33,9 +33,9 @@ func (t *TradeReader) Get(q *trader.TradeReaderQuery) ([]*trader.Trade, error) {
 
 		err := rows.Scan(
 			&id,
+			&strategyID,
 			&tr.Exchange,
 			&tr.ExchangeRef,
-			&strategyID,
 			&tr.Market,
 			&tr.Runner,
 			&tr.Price,
@@ -74,4 +74,8 @@ func buildTradeQuery(db *sql.DB, q *trader.TradeReaderQuery) sq.SelectBuilder {
 	}
 
 	return query
+}
+
+func NewTradeReader(connection *sql.DB) trader.TradeReader {
+	return &TradeReader{connection: connection}
 }
