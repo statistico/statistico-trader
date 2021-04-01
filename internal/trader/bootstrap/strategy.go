@@ -8,3 +8,7 @@ import (
 func (c Container) StrategyWriter() trader.StrategyWriter {
 	return postgres.NewStrategyWriter(c.Database)
 }
+
+func (c Container) StrategyReader() trader.StrategyReader {
+	return postgres.NewStrategyReader(c.Database)
+}
