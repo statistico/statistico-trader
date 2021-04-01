@@ -200,12 +200,20 @@ func buildReaderQuery(db *sql.DB, q *trader.StrategyReaderQuery) sq.SelectBuilde
 
 	if q.Price != nil {
 		query = query.
-			Where(sq.GtOrEq{"max_odds": *q.Price}).
-			Where(sq.LtOrEq{"min_odds": *q.Price})
+			Where("(min_odds <= ? OR min_odds IS NULL)", *q.Price).
+			Where("(max_odds >= ? OR max_odds IS NULL)", *q.Price)
 	}
 
 	if q.CompetitionID != nil {
-		query = query.Where(" = ANY(competition_ids)?", *q.CompetitionID)
+		query = query.Where("? = ANY(competition_ids)", *q.CompetitionID)
+	}
+
+	if q.Side != nil {
+		query = query.Where(sq.Eq{"side": *q.Side})
+	}
+
+	if q.Status != nil {
+		query = query.Where(sq.Eq{"status": *q.Status})
 	}
 
 	if q.Visibility != nil {

@@ -16,6 +16,8 @@ type StrategyReaderQuery struct {
 	Runner     *string
 	Price      *float32
 	CompetitionID *uint64
+	Side       *string
+	Status     *string
 	Visibility *string
 	OrderBy    *string
 }
