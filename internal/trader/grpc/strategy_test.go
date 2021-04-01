@@ -133,6 +133,7 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
+		reader := new(MockStrategyReader)
 		client := new(MockMarketClient)
 		finder := new(MockTradeFinder)
 		logger, hook := test.NewNullLogger()
@@ -140,7 +141,7 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		stream := new(MockStrategyServer)
 
-		service := g.NewStrategyService(writer, client, finder, logger, clock)
+		service := g.NewStrategyService(writer, reader, client, finder, logger, clock)
 
 		mkReq := mock.MatchedBy(func(r *statistico.MarketRunnerRequest) bool {
 			a := assert.New(t)
@@ -179,6 +180,7 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
+		reader := new(MockStrategyReader)
 		client := new(MockMarketClient)
 		finder := new(MockTradeFinder)
 		logger, hook := test.NewNullLogger()
@@ -186,7 +188,7 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		stream := new(MockStrategyServer)
 
-		service := g.NewStrategyService(writer, client, finder, logger, clock)
+		service := g.NewStrategyService(writer, reader, client, finder, logger, clock)
 
 		mkReq := mock.MatchedBy(func(r *statistico.MarketRunnerRequest) bool {
 			a := assert.New(t)
@@ -225,6 +227,7 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
+		reader := new(MockStrategyReader)
 		client := new(MockMarketClient)
 		finder := new(MockTradeFinder)
 		logger, hook := test.NewNullLogger()
@@ -232,7 +235,7 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		stream := new(MockStrategyServer)
 
-		service := g.NewStrategyService(writer, client, finder, logger, clock)
+		service := g.NewStrategyService(writer, reader, client, finder, logger, clock)
 
 		mkReq := mock.MatchedBy(func(r *statistico.MarketRunnerRequest) bool {
 			a := assert.New(t)
@@ -275,17 +278,17 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
+		reader := new(MockStrategyReader)
 		client := new(MockMarketClient)
 		finder := new(MockTradeFinder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, client, finder, logger, clock)
+		service := g.NewStrategyService(writer, reader, client, finder, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			MinOdds:        &wrappers.FloatValue{Value: 1.50},
@@ -361,7 +364,9 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		writer.On("Insert", st).Return(nil)
 
-		s, err := service.SaveStrategy(context.Background(), r)
+		ctx := context.WithValue(context.Background(), "userID", "a5f04fd2-dfe7-41c1-af38-d490119705d8")
+
+		s, err := service.SaveStrategy(ctx, r)
 
 		if err != nil {
 			t.Fatalf("Expected error, got %s", err.Error())
@@ -373,7 +378,7 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		a.Equal(r.GetName(), s.GetName())
 		a.Equal(r.GetDescription(), s.GetDescription())
-		a.Equal(r.GetUserId(), s.GetUserId())
+		a.Equal("a5f04fd2-dfe7-41c1-af38-d490119705d8", s.GetUserId())
 		a.Equal(r.GetMarket(), s.GetMarket())
 		a.Equal(r.GetRunner(), s.GetRunner())
 		a.Equal(r.GetMinOdds(), s.GetMinOdds())
@@ -394,17 +399,17 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
+		reader := new(MockStrategyReader)
 		client := new(MockMarketClient)
 		finder := new(MockTradeFinder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, client, finder, logger, clock)
+		service := g.NewStrategyService(writer, reader, client, finder, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			MinOdds:        &wrappers.FloatValue{Value: 1.50},
@@ -438,7 +443,9 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 			},
 		}
 
-		_, err := service.SaveStrategy(context.Background(), r)
+		ctx := context.WithValue(context.Background(), "userID", "a")
+
+		_, err := service.SaveStrategy(ctx, r)
 
 		if err == nil {
 			t.Fatal("Expected error, got nil")
@@ -448,7 +455,7 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 			assert.Equal(t, codes.Code(3), e.Code())
 		}
 
-		assert.Equal(t, "rpc error: code = InvalidArgument desc = error parsing user ID: invalid UUID length: 1", err.Error())
+		assert.Equal(t, "rpc error: code = InvalidArgument desc = user id provided is not a valid uuid string: invalid UUID length: 1", err.Error())
 
 		writer.AssertNotCalled(t, "Insert")
 	})
@@ -457,17 +464,17 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
+		reader := new(MockStrategyReader)
 		client := new(MockMarketClient)
 		finder := new(MockTradeFinder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, client, finder, logger, clock)
+		service := g.NewStrategyService(writer, reader, client, finder, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			MinOdds:        &wrappers.FloatValue{Value: 1.50},
@@ -545,7 +552,9 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		writer.On("Insert", st).Return(&e)
 
-		_, err := service.SaveStrategy(context.Background(), r)
+		ctx := context.WithValue(context.Background(), "userID", "a5f04fd2-dfe7-41c1-af38-d490119705d8")
+
+		_, err := service.SaveStrategy(ctx, r)
 
 		if err == nil {
 			t.Fatal("Expected error, got nil")
@@ -564,17 +573,17 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
+		reader := new(MockStrategyReader)
 		client := new(MockMarketClient)
 		finder := new(MockTradeFinder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, client, finder, logger, clock)
+		service := g.NewStrategyService(writer, reader, client, finder, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			MinOdds:        &wrappers.FloatValue{Value: 1.50},
@@ -652,7 +661,9 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		writer.On("Insert", st).Return(e)
 
-		_, err := service.SaveStrategy(context.Background(), r)
+		ctx := context.WithValue(context.Background(), "userID", "a5f04fd2-dfe7-41c1-af38-d490119705d8")
+
+		_, err := service.SaveStrategy(ctx, r)
 
 		if err == nil {
 			t.Fatal("Expected error, got nil")
@@ -675,6 +686,15 @@ type MockStrategyWriter struct {
 func (m *MockStrategyWriter) Insert(s *trader.Strategy) error {
 	args := m.Called(s)
 	return args.Error(0)
+}
+
+type MockStrategyReader struct {
+	mock.Mock
+}
+
+func (m *MockStrategyReader) Get(q *trader.StrategyReaderQuery) ([]*trader.Strategy, error) {
+	args := m.Called(q)
+	return args.Get(0).([]*trader.Strategy), args.Error(1)
 }
 
 type MockMarketClient struct {

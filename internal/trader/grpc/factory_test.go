@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/statistico/statistico-proto/go"
 	"github.com/statistico/statistico-strategy/internal/trader"
@@ -16,7 +17,6 @@ func TestStrategyFromRequest(t *testing.T) {
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			MinOdds:        &wrappers.FloatValue{Value: 1.50},
@@ -50,7 +50,9 @@ func TestStrategyFromRequest(t *testing.T) {
 			},
 		}
 
-		s, err := strategyFromRequest(r, time.Unix(1616936636, 0))
+		ctx := context.WithValue(context.Background(), "userID", "a5f04fd2-dfe7-41c1-af38-d490119705d8")
+
+		s, err := strategyFromRequest(ctx, r, time.Unix(1616936636, 0))
 
 		if err != nil {
 			t.Fatalf("Expected nil, got %s", err.Error())
@@ -106,7 +108,6 @@ func TestStrategyFromRequest(t *testing.T) {
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a5f04fd2",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			MinOdds:        &wrappers.FloatValue{Value: 1.50},
@@ -116,13 +117,15 @@ func TestStrategyFromRequest(t *testing.T) {
 			Visibility:     statistico.VisibilityEnum_PRIVATE,
 		}
 
-		_, err := strategyFromRequest(r, time.Unix(1616936636, 0))
+		ctx := context.WithValue(context.Background(), "userID", "a5f04fd2")
+
+		_, err := strategyFromRequest(ctx, r, time.Unix(1616936636, 0))
 
 		if err == nil {
 			t.Fatal("Expected error, got nil")
 		}
 
-		assert.Equal(t, "rpc error: code = InvalidArgument desc = error parsing user ID: invalid UUID length: 8", err.Error())
+		assert.Equal(t, "rpc error: code = InvalidArgument desc = user id provided is not a valid uuid string: invalid UUID length: 8", err.Error())
 	})
 
 	t.Run("returns error if both min and max odds are not provided", func(t *testing.T) {
@@ -131,7 +134,6 @@ func TestStrategyFromRequest(t *testing.T) {
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			Side:           statistico.SideEnum_BACK,
@@ -143,7 +145,9 @@ func TestStrategyFromRequest(t *testing.T) {
 			},
 		}
 
-		_, err := strategyFromRequest(r, time.Unix(1616936636, 0))
+		ctx := context.WithValue(context.Background(), "userID", "a5f04fd2-dfe7-41c1-af38-d490119705d8")
+
+		_, err := strategyFromRequest(ctx, r, time.Unix(1616936636, 0))
 
 		if err == nil {
 			t.Fatal("Expected error, got nil")
@@ -158,7 +162,6 @@ func TestStrategyFromRequest(t *testing.T) {
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
 			Description:    "Home favourite strategy",
-			UserId:         "a5f04fd2-dfe7-41c1-af38-d490119705d8",
 			Market:         "MATCH_ODDS",
 			Runner:         "Home",
 			MinOdds:        &wrappers.FloatValue{Value: 1.50},
@@ -192,7 +195,9 @@ func TestStrategyFromRequest(t *testing.T) {
 			},
 		}
 
-		_, err := strategyFromRequest(r, time.Unix(1616936636, 0))
+		ctx := context.WithValue(context.Background(), "userID", "a5f04fd2-dfe7-41c1-af38-d490119705d8")
+
+		_, err := strategyFromRequest(ctx, r, time.Unix(1616936636, 0))
 
 		if err == nil {
 			t.Fatal("Expected error, got nil")
