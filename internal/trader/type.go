@@ -63,3 +63,18 @@ func (s *StakingPlan) Scan(value interface{}) error {
 
 	return json.Unmarshal(b, &s)
 }
+
+type Trade struct {
+	ID          uuid.UUID `json:"id"`
+	StrategyID  uuid.UUID `json:"strategyId"`
+	Exchange    string    `json:"exchange"`
+	ExchangeRef string    `json:"exchangeRef"`
+	Market      string    `json:"market"`
+	Runner      string    `json:"runner"`
+	Price       float32   `json:"price"`
+	EventID     uint64    `json:"eventId"`
+	EventDate   time.Time `json:"eventDate"`
+	Side        string    `json:"side"`
+	Result      string    `json:"result,omitempty"`
+	Timestamp   time.Time `json:"timestamp"`
+}
