@@ -190,12 +190,16 @@ github.com/statistico/statistico-data-go-grpc-client v0.0.0-20210317184121-2d206
 github.com/statistico/statistico-data-go-grpc-client v0.0.0-20210317184121-2d206ae02b3e/go.mod h1:9zneZmnJRXhSxeZiJwDvZpfjo/IxHHIiEiShBKQGDbU=
 github.com/statistico/statistico-odds-warehouse-go-grpc-client v0.0.0-20210127144902-9f8171a689ae h1:2iRaUEGulesHDO9mJzvz+Wq8CUijfLbbMQaEuN6sfxY=
 github.com/statistico/statistico-odds-warehouse-go-grpc-client v0.0.0-20210127144902-9f8171a689ae/go.mod h1:c705xggUOMFEs79Z9Vg3rekCGG2t8qkNaCXez5O/9jQ=
+github.com/statistico/statistico-proto v0.0.3-0.20210331152332-2c6719a92a63 h1:ftHn7CoLIqTPM9GZPfpoB0HZgJgOnqdl+olv92KJv94=
+github.com/statistico/statistico-proto v0.0.3-0.20210331152332-2c6719a92a63/go.mod h1:IegjDKIHD0rxW6y2a++xCNNqIGSTxmncB6AempSO6pk=
 github.com/statistico/statistico-proto/go v0.0.0-20210123162423-c8b53fd7dc60 h1:Q28sJGlu/68jL1Uq5ecu+1Uw5EXpb8PG2H1lqNp5TBI=
 github.com/statistico/statistico-proto/go v0.0.0-20210123162423-c8b53fd7dc60/go.mod h1:vPyOUzi8uJfwh6QGj2RFFsgLTG2YehvpiN/ziVWEHV0=
 github.com/statistico/statistico-proto/go v0.0.0-20210127141535-19abef3f9457 h1:xKuKJFRgjNpdNY6xqZAx1Oe+7Tu0hINk08wMCfTnz8A=
 github.com/statistico/statistico-proto/go v0.0.0-20210127141535-19abef3f9457/go.mod h1:vPyOUzi8uJfwh6QGj2RFFsgLTG2YehvpiN/ziVWEHV0=
 github.com/statistico/statistico-proto/go v0.0.0-20210329082303-a804d299cddc h1:+WzSKx2PLn/aSdWw1ovfSTIlskF8Z/U18+ICY9aB8z4=
 github.com/statistico/statistico-proto/go v0.0.0-20210329082303-a804d299cddc/go.mod h1:vPyOUzi8uJfwh6QGj2RFFsgLTG2YehvpiN/ziVWEHV0=
+github.com/statistico/statistico-proto/go v0.0.0-20210331152332-2c6719a92a63 h1:Q3f8hgnTcqyAAPD240bZ3GyyiBPf51vwofPQaFM3M5A=
+github.com/statistico/statistico-proto/go v0.0.0-20210331152332-2c6719a92a63/go.mod h1:vPyOUzi8uJfwh6QGj2RFFsgLTG2YehvpiN/ziVWEHV0=
 github.com/stretchr/objx v0.1.0 h1:4G4v2dO3VZwixGIRoQ5Lfboy6nUhCyYzaqnIAPPhYs4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
@@ -481,6 +485,8 @@ google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210 h1:fFxjezD+ZiiYJ6z
 google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210/go.mod h1:f2Bd7+2PlaVKmvKQ52aspJZXIDaRQBVdOOBfJ5i8OEs=
 google.golang.org/genproto v0.0.0-20210330181207-2295ebbda0c6 h1:F+kz69Q2lpqBTskKa73+uBMwi7PBQRQEUBqHt0oc1K8=
 google.golang.org/genproto v0.0.0-20210330181207-2295ebbda0c6/go.mod h1:9lPAdzaEmUacj36I+k7YKbEc5CXzPIeORRgDAUOu28A=
+google.golang.org/genproto v0.0.0-20210331142528-b7513248f0ba h1:tRxOO808//a0cjdmwKb31i0XLNU1ZkJK1IilAAjD8Tg=
+google.golang.org/genproto v0.0.0-20210331142528-b7513248f0ba/go.mod h1:9lPAdzaEmUacj36I+k7YKbEc5CXzPIeORRgDAUOu28A=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
 google.golang.org/grpc v1.20.1/go.mod h1:10oTOabMzJvdu6/UiuZezV6QK5dSlG84ov/aaiqXj38=
 google.golang.org/grpc v1.21.1/go.mod h1:oYelfM1adQP15Ek0mdvEgi9Df8B9CZIaU1084ijfRaM=

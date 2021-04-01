@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/jonboulle/clockwork"
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-odds-warehouse-go-grpc-client"
@@ -11,11 +10,11 @@ import (
 	"github.com/statistico/statistico-strategy/internal/trader/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type StrategyService struct {
 	writer     trader.StrategyWriter
+	reader     trader.StrategyReader
 	oddsClient statisticooddswarehouse.MarketClient
 	finder     TradeFinder
 	logger     *logrus.Logger
@@ -65,7 +64,7 @@ func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stre
 }
 
 func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveStrategyRequest) (*statistico.Strategy, error) {
-	strategy, err := strategyFromRequest(r, s.clock.Now())
+	strategy, err := strategyFromRequest(ctx, r, s.clock.Now())
 
 	if err != nil {
 		return nil, err
@@ -81,28 +80,35 @@ func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveSt
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	return &statistico.Strategy{
-		Id:             strategy.ID.String(),
-		Name:           strategy.Name,
-		Description:    strategy.Description,
-		UserId:         strategy.UserID.String(),
-		Market:         strategy.MarketName,
-		Runner:         strategy.RunnerName,
-		MinOdds:        &wrappers.FloatValue{Value: *strategy.MinOdds},
-		MaxOdds:        &wrappers.FloatValue{Value: *strategy.MaxOdds},
-		CompetitionIds: strategy.CompetitionIDs,
-		Side:           statistico.SideEnum(statistico.SideEnum_value[strategy.Side]),
-		Visibility:     statistico.VisibilityEnum(statistico.VisibilityEnum_value[strategy.Visibility]),
-		Status:         statistico.StrategyStatusEnum_ACTIVE,
-		ResultFilters:  r.ResultFilters,
-		StatFilters:    r.StatFilters,
-		CreatedAt:      timestamppb.New(strategy.CreatedAt),
-		UpdatedAt:      timestamppb.New(strategy.UpdatedAt),
-	}, nil
+	return convertToStatisticoStrategy(strategy), nil
+}
+
+func (s *StrategyService) ListUserStrategies(r *statistico.ListUserStrategiesRequest, stream statistico.StrategyService_ListUserStrategiesServer) error {
+	query, err :=  strategyReaderQuery(stream.Context(), r)
+
+	if err != nil {
+		return err
+	}
+
+	strategies, err := s.reader.Get(query)
+
+	if err != nil {
+		s.logger.Errorf("error fetching strategies from reader: %s", err.Error())
+		return status.Error(codes.Internal, "internal server error")
+	}
+
+	for _, st := range strategies {
+		if err := stream.Send(convertToStatisticoStrategy(st)); err != nil {
+			s.logger.Errorf("error streaming strategy back to client: %s", err.Error())
+		}
+	}
+
+	return nil
 }
 
 func NewStrategyService(
 	w trader.StrategyWriter,
+	r trader.StrategyReader,
 	c statisticooddswarehouse.MarketClient,
 	f TradeFinder,
 	l *logrus.Logger,
@@ -110,6 +116,7 @@ func NewStrategyService(
 ) *StrategyService {
 	return &StrategyService{
 		writer:     w,
+		reader:     r,
 		oddsClient: c,
 		finder:     f,
 		logger:     l,
