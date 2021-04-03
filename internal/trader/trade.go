@@ -12,5 +12,5 @@ type TradeReader interface {
 
 type TradeReaderQuery struct {
 	StrategyID   uuid.UUID
-	Status       []string
+	Result       []string
 }

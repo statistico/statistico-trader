@@ -72,9 +72,10 @@ type Trade struct {
 	Market      string    `json:"market"`
 	Runner      string    `json:"runner"`
 	Price       float32   `json:"price"`
+	Stake       float32   `json:"stake"`
 	EventID     uint64    `json:"eventId"`
 	EventDate   time.Time `json:"eventDate"`
 	Side        string    `json:"side"`
-	Status      string    `json:"status"`
+	Result      string    `json:"result"`
 	Timestamp   time.Time `json:"timestamp"`
 }

@@ -56,21 +56,21 @@ func TestTradeReader_Get(t *testing.T) {
 			{
 				&trader.TradeReaderQuery{
 					StrategyID: stIdOne,
-					Status:     []string{"IN_PLAY", "FAIL"},
+					Result:     []string{"IN_PLAY", "FAIL"},
 				},
 				2,
 			},
 			{
 				&trader.TradeReaderQuery{
 					StrategyID: stIdTwo,
-					Status:     []string{"IN_PLAY", "FAIL"},
+					Result:     []string{"IN_PLAY", "FAIL"},
 				},
 				1,
 			},
 			{
 				&trader.TradeReaderQuery{
 					StrategyID: stIdOne,
-					Status:     []string{"SUCCESS", "FAIL"},
+					Result:     []string{"SUCCESS", "FAIL"},
 				},
 				2,
 			},

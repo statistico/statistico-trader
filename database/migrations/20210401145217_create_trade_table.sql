@@ -8,10 +8,11 @@ CREATE TABLE trade (
     market VARCHAR NOT NULL,
     runner VARCHAR NOT NULL,
     price FLOAT NOT NULL,
+    stake FLOAT NOT NULL,
     event_id INTEGER NOT NULL,
     event_date INTEGER NOT NULL,
     side VARCHAR NOT NULL,
-    status VARCHAR NOT NULL,
+    result VARCHAR NOT NULL,
     timestamp INTEGER NOT NULL
 );
 
