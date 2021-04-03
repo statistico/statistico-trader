@@ -22,10 +22,11 @@ func (w *TradeWriter) Insert(t *trader.Trade) error {
 			"market",
 			"runner",
 			"price",
+			"stake",
 			"event_id",
 			"event_date",
 			"side",
-			"status",
+			"result",
 			"timestamp",
 		).
 		Values(
@@ -36,10 +37,11 @@ func (w *TradeWriter) Insert(t *trader.Trade) error {
 			t.Market,
 			t.Runner,
 			t.Price,
+			t.Stake,
 			t.EventID,
 			t.EventDate.Unix(),
 			t.Side,
-			t.Status,
+			t.Result,
 			t.Timestamp.Unix(),
 		).Exec()
 

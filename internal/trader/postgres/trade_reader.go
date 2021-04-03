@@ -39,10 +39,11 @@ func (t *TradeReader) Get(q *trader.TradeReaderQuery) ([]*trader.Trade, error) {
 			&tr.Market,
 			&tr.Runner,
 			&tr.Price,
+			&tr.Stake,
 			&tr.EventID,
 			&eventDate,
 			&tr.Side,
-			&tr.Status,
+			&tr.Result,
 			&timestamp,
 		)
 
@@ -69,8 +70,8 @@ func buildTradeQuery(db *sql.DB, q *trader.TradeReaderQuery) sq.SelectBuilder {
 		From("trade").
 		Where(sq.Eq{"strategy_id": q.StrategyID.String()})
 
-	if len(q.Status) > 0 {
-		query = query.Where(sq.Eq{"status": q.Status})
+	if len(q.Result) > 0 {
+		query = query.Where(sq.Eq{"result": q.Result})
 	}
 
 	return query
