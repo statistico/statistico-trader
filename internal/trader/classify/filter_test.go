@@ -198,7 +198,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 		sc := new(MockStatClassifier)
 
 		fc.On("ByID", ctx, uint64(192810)).Return(&fixture, nil)
-		
+
 		e := errors.New("error from classifier")
 
 		rc.On("MatchesFilter", ctx, &fix, f1).Return(true, nil)
