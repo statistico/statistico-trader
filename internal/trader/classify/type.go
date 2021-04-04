@@ -1,6 +1,9 @@
 package classify
 
-import "time"
+import (
+	"github.com/statistico/statistico-strategy/internal/trader"
+	"time"
+)
 
 const (
 	AwayTeam = "AWAY_TEAM"
@@ -32,4 +35,10 @@ type Fixture struct {
 	AwayTeamID uint64
 	Date       time.Time
 	SeasonID   uint64
+}
+
+type MatcherQuery struct {
+	EventID       uint64
+	ResultFilters []*trader.ResultFilter
+	StatFilters   []*trader.StatFilter
 }
