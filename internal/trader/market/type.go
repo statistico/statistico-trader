@@ -53,3 +53,9 @@ type Query struct {
 	ResultFilters []*trader.ResultFilter
 	StatFilters   []*trader.StatFilter
 }
+
+type MatcherQuery struct {
+	EventID       uint64
+	ResultFilters []*trader.ResultFilter
+	StatFilters   []*trader.StatFilter
+}
