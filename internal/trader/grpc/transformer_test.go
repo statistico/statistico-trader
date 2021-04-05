@@ -2,49 +2,47 @@ package grpc
 
 import (
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader/market"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
-func Test_transformTradeResultToStrategyTrade(t *testing.T) {
-	t.Run("transforms trade Result struct into StrategyTrade struct", func(t *testing.T) {
-		t.Helper()
-
-		result := "SUCCESS"
-
-		tr := market.Trade{
-			MarketName:    "MATCH_ODDS",
-			RunnerName:    "Draw",
-			RunnerPrice:   4.05,
-			EventId:       198187871,
-			CompetitionId: 8,
-			SeasonId:      17420,
-			EventDate:     time.Unix(1584014400, 0),
-			Side:          "BACK",
-			Result:        &result,
-		}
-
-		st, err := transformTradeResultToStrategyTrade(&tr)
-
-		if err != nil {
-			t.Fatalf("Expected nil, got %s", err.Error())
-		}
-
-		a := assert.New(t)
-
-		a.Equal("MATCH_ODDS", st.MarketName)
-		a.Equal("Draw", st.RunnerName)
-		a.Equal(float32(4.05), st.RunnerPrice)
-		a.Equal(statistico.SideEnum_BACK, st.Side)
-		a.Equal(uint64(198187871), st.EventId)
-		a.Equal(uint64(8), st.CompetitionId)
-		a.Equal(uint64(17420), st.SeasonId)
-		a.Equal(int64(1584014400), st.EventDate.Seconds)
-		a.Equal(statistico.TradeResultEnum_SUCCESS, st.Result)
-	})
-}
+//func Test_transformTradeResultToStrategyTrade(t *testing.T) {
+//	t.Run("transforms trade Result struct into StrategyTrade struct", func(t *testing.T) {
+//		t.Helper()
+//
+//		result := "SUCCESS"
+//
+//		tr := market.Trade{
+//			MarketName:    "MATCH_ODDS",
+//			RunnerName:    "Draw",
+//			RunnerPrice:   4.05,
+//			EventId:       198187871,
+//			CompetitionId: 8,
+//			SeasonId:      17420,
+//			EventDate:     time.Unix(1584014400, 0),
+//			Side:          "BACK",
+//			Result:        &result,
+//		}
+//
+//		st, err := transformTradeResultToStrategyTrade(&tr)
+//
+//		if err != nil {
+//			t.Fatalf("Expected nil, got %s", err.Error())
+//		}
+//
+//		a := assert.New(t)
+//
+//		a.Equal("MATCH_ODDS", st.MarketName)
+//		a.Equal("Draw", st.RunnerName)
+//		a.Equal(float32(4.05), st.RunnerPrice)
+//		a.Equal(statistico.SideEnum_BACK, st.Side)
+//		a.Equal(uint64(198187871), st.EventId)
+//		a.Equal(uint64(8), st.CompetitionId)
+//		a.Equal(uint64(17420), st.SeasonId)
+//		a.Equal(int64(1584014400), st.EventDate.Seconds)
+//		a.Equal(statistico.TradeResultEnum_SUCCESS, st.Result)
+//	})
+//}
 
 func Test_transformResultFilters(t *testing.T) {
 	t.Run("transforms statistico.ResultFilter struct into trade.ResultFilter struct", func(t *testing.T) {

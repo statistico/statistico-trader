@@ -42,7 +42,7 @@ func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stre
 
 	query := TradeQuery{
 		Markets:       markets,
-		RunnerFilters: transformResultFilters(r.ResultFilters),
+		ResultFilters: transformResultFilters(r.ResultFilters),
 		StatFilters:   transformStatFilters(r.StatFilters),
 	}
 

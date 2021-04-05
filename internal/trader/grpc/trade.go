@@ -61,7 +61,7 @@ func (t *tradeFinder) filterMarket(ctx context.Context, ch chan<- *statistico.St
 	}
 
 	if matches {
-		ch <- // Push trade into channel
+		ch <- nil
 	}
 
 	wg.Done()
