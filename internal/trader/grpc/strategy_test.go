@@ -57,34 +57,34 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 		},
 	}
 
-	query := mock.MatchedBy(func(q *g.TradeQuery) bool {
-		resFil := []*trader.ResultFilter{
-			{
-				Team:   "HOME_TEAM",
-				Result: "WIN_DRAW",
-				Games:  uint8(2),
-				Venue:  "HOME_AWAY",
-			},
-		}
-
-		statFil := []*trader.StatFilter{
-			{
-				Stat:    "GOALS",
-				Team:    "HOME_TEAM",
-				Action:  "AGAINST",
-				Games:   uint8(4),
-				Metric:  "GTE",
-				Measure: "AVERAGE",
-				Value:   3.1,
-				Venue:   "AWAY",
-			},
-		}
-
-		assert.Equal(t, resFil, q.ResultFilters)
-		assert.Equal(t, statFil, q.StatFilters)
-
-		return true
-	})
+	//query := mock.MatchedBy(func(q *g.TradeQuery) bool {
+	//	resFil := []*trader.ResultFilter{
+	//		{
+	//			Team:   "HOME_TEAM",
+	//			Result: "WIN_DRAW",
+	//			Games:  uint8(2),
+	//			Venue:  "HOME_AWAY",
+	//		},
+	//	}
+	//
+	//	statFil := []*trader.StatFilter{
+	//		{
+	//			Stat:    "GOALS",
+	//			Team:    "HOME_TEAM",
+	//			Action:  "AGAINST",
+	//			Games:   uint8(4),
+	//			Metric:  "GTE",
+	//			Measure: "AVERAGE",
+	//			Value:   3.1,
+	//			Venue:   "AWAY",
+	//		},
+	//	}
+	//
+	//	assert.Equal(t, resFil, q.ResultFilters)
+	//	assert.Equal(t, statFil, q.StatFilters)
+	//
+	//	return true
+	//})
 
 	date := timestamppb.New(time.Unix(1584014400, 0))
 
