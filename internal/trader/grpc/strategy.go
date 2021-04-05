@@ -21,46 +21,46 @@ type StrategyService struct {
 	statistico.UnimplementedStrategyServiceServer
 }
 
-//func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stream statistico.StrategyService_BuildStrategyServer) error {
-//	req := statistico.MarketRunnerRequest{
-//		Market:         r.GetMarket(),
-//		Runner:         r.GetRunner(),
-//		Line:           r.GetLine(),
-//		Side:           r.GetSide(),
-//		MinOdds:        r.GetMinOdds(),
-//		MaxOdds:        r.GetMaxOdds(),
-//		CompetitionIds: r.GetCompetitionIds(),
-//		SeasonIds:      r.GetSeasonIds(),
-//		DateFrom:       r.GetDateFrom(),
-//		DateTo:         r.GetDateTo(),
-//	}
-//
-//	ctx := context.Background()
-//
-//	markets, errCh := s.oddsClient.MarketRunnerSearch(ctx, &req)
-//
-//	query := TradeQuery{
-//		Markets:       markets,
-//		ResultFilters: transformResultFilters(r.ResultFilters),
-//		StatFilters:   transformStatFilters(r.StatFilters),
-//	}
-//
-//	trades := s.finder.Find(ctx, &query)
-//
-//	for t := range trades {
-//		if err := stream.Send(t); err != nil {
-//			s.logger.Errorf("error streaming market runner back to client: %s", err.Error())
-//		}
-//	}
-//
-//	err := <-errCh
-//
-//	if err != nil {
-//		s.logger.Errorf("error fetching market runners from odds warehouse: %s", err.Error())
-//	}
-//
-//	return err
-//}
+func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stream statistico.StrategyService_BuildStrategyServer) error {
+	//req := statistico.MarketRunnerRequest{
+	//	Market:         r.GetMarket(),
+	//	Runner:         r.GetRunner(),
+	//	Line:           r.GetLine(),
+	//	Side:           r.GetSide(),
+	//	MinOdds:        r.GetMinOdds(),
+	//	MaxOdds:        r.GetMaxOdds(),
+	//	CompetitionIds: r.GetCompetitionIds(),
+	//	SeasonIds:      r.GetSeasonIds(),
+	//	DateFrom:       r.GetDateFrom(),
+	//	DateTo:         r.GetDateTo(),
+	//}
+	//
+	//ctx := context.Background()
+	//
+	//markets, errCh := s.oddsClient.MarketRunnerSearch(ctx, &req)
+	//
+	//query := TradeQuery{
+	//	Markets:       markets,
+	//	ResultFilters: transformResultFilters(r.ResultFilters),
+	//	StatFilters:   transformStatFilters(r.StatFilters),
+	//}
+	//
+	//trades := s.finder.Find(ctx, &query)
+	//
+	//for t := range trades {
+	//	if err := stream.Send(t); err != nil {
+	//		s.logger.Errorf("error streaming market runner back to client: %s", err.Error())
+	//	}
+	//}
+	//
+	//err := <-errCh
+	//
+	//if err != nil {
+	//	s.logger.Errorf("error fetching market runners from odds warehouse: %s", err.Error())
+	//}
+
+	return nil
+}
 
 func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveStrategyRequest) (*statistico.Strategy, error) {
 	strategy, err := strategyFromRequest(ctx, r, s.clock.Now())
