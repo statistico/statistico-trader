@@ -8,12 +8,18 @@ import (
 )
 
 func TestUserService_ByID(t *testing.T) {
-	id := uuid.MustParse("f34fcc71-9089-4dd8-a128-25f0725a55d7")
-
-	service := inmemory.NewUserService(id, "test@email.com", "test", "password", "key123")
+	service := inmemory.NewUserService(
+		"f34fcc71-9089-4dd8-a128-25f0725a55d7",
+		"test@email.com",
+		"test",
+		"password",
+		"key123",
+	)
 
 	t.Run("returns user struct if ID matches expecting expected ID", func(t *testing.T) {
 		t.Helper()
+
+		id := uuid.MustParse("f34fcc71-9089-4dd8-a128-25f0725a55d7")
 
 		user, err := service.ByID(id)
 

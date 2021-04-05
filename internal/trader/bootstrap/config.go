@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"github.com/google/uuid"
 	"os"
 )
 
@@ -44,7 +43,7 @@ type StatisticoOddsWarehouseService struct {
 
 // User is a temporary struct containing a hardcoded user until abstract user management functionality is implemented
 type User struct {
-	ID    uuid.UUID
+	ID    string
 	Email string
 	BetFairUserName string
 	BetFairPassword string
@@ -81,7 +80,7 @@ func BuildConfig() *Config {
 	}
 
 	config.User = User{
-		ID:              uuid.MustParse(os.Getenv("USER_ID")),
+		ID:              os.Getenv("USER_ID"),
 		Email:           os.Getenv("USER_EMAIL_ADDRESS"),
 		BetFairUserName: os.Getenv("BETFAIR_USERNAME"),
 		BetFairPassword: os.Getenv("BETFAIR_PASSWORD"),
