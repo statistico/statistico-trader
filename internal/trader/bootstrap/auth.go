@@ -2,7 +2,7 @@ package bootstrap
 
 import (
 	"github.com/statistico/statistico-strategy/internal/trader/auth"
-	"github.com/statistico/statistico-strategy/internal/trader/auth/config"
+	"github.com/statistico/statistico-strategy/internal/trader/auth/inmemory"
 )
 
 func (c Container) TokenAuthoriser() auth.TokenAuthoriser {
@@ -12,5 +12,13 @@ func (c Container) TokenAuthoriser() auth.TokenAuthoriser {
 }
 
 func (c Container) UserService() auth.UserService {
-	return config.NewUserService(c.Config)
+	user := c.Config.User
+
+	return inmemory.NewUserService(
+		user.ID,
+		user.Email,
+		user.BetFairUserName,
+		user.BetFairPassword,
+		user.BetFairKey,
+	)
 }
