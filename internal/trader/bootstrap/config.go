@@ -1,6 +1,9 @@
 package bootstrap
 
-import "os"
+import (
+	"github.com/google/uuid"
+	"os"
+)
 
 type Config struct {
 	AWS
@@ -8,6 +11,7 @@ type Config struct {
 	Sentry
 	StatisticoDataService
 	StatisticoOddsWarehouseService
+	User
 }
 
 type AWS struct {
@@ -38,6 +42,15 @@ type StatisticoOddsWarehouseService struct {
 	Port string
 }
 
+// User is a temporary struct containing a hardcoded user until abstract user management functionality is implemented
+type User struct {
+	ID    uuid.UUID
+	Email string
+	BetFairUserName string
+	BetFairPassword string
+	BetFairKey string
+}
+
 func BuildConfig() *Config {
 	config := Config{}
 
@@ -65,6 +78,14 @@ func BuildConfig() *Config {
 	config.StatisticoOddsWarehouseService = StatisticoOddsWarehouseService{
 		Host: os.Getenv("STATISTICO_ODDS_WAREHOUSE_SERVICE_HOST"),
 		Port: os.Getenv("STATISTICO_ODDS_WAREHOUSE_SERVICE_PORT"),
+	}
+
+	config.User = User{
+		ID:              uuid.MustParse(os.Getenv("USER_ID")),
+		Email:           os.Getenv("USER_EMAIL_ADDRESS"),
+		BetFairUserName: os.Getenv("BETFAIR_USERNAME"),
+		BetFairPassword: os.Getenv("BETFAIR_PASSWORD"),
+		BetFairKey:      os.Getenv("BETFAIR_KEY"),
 	}
 
 	return &config
