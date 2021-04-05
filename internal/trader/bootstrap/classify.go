@@ -5,7 +5,7 @@ import (
 )
 
 func (c Container) FilterMatcher() classify.FilterMatcher {
-	return classify.NewFilterMatcher(c.ResultClassifier(), c.StatClassifier())
+	return classify.NewFilterMatcher(c.DataServiceFixtureClient(), c.ResultClassifier(), c.StatClassifier())
 }
 
 func (c Container) ResultClassifier() classify.ResultFilterClassifier {

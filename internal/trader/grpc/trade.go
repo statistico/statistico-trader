@@ -2,10 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader/market"
+	"github.com/statistico/statistico-strategy/internal/trader/classify"
 	"sync"
 )
 
@@ -14,7 +13,7 @@ type TradeFinder interface {
 }
 
 type tradeFinder struct {
-	factory market.TradeFactory
+	matcher classify.FilterMatcher
 	logger  *logrus.Logger
 }
 
@@ -40,29 +39,13 @@ func (t *tradeFinder) handleMarkets(ctx context.Context, ch chan<- *statistico.S
 }
 
 func (t *tradeFinder) filterMarket(ctx context.Context, ch chan<- *statistico.StrategyTrade, mk *statistico.MarketRunner, q *TradeQuery, wg *sync.WaitGroup) {
-	date, err := ptypes.Timestamp(mk.EventDate)
-
-	if err != nil {
-		t.logger.Errorf("Error parsing market event date: Error %s", err.Error())
-		wg.Done()
-		return
-	}
-
-	query := market.Query{
-		MarketName:    mk.GetMarketName(),
-		RunnerName:    mk.GetRunnerName(),
-		RunnerPrice:   mk.GetPrice().GetValue(),
-		EventId:       mk.GetEventId(),
-		CompetitionId: mk.GetCompetitionId(),
-		SeasonId:      mk.GetSeasonId(),
-		EventDate:     date,
-		Side:          mk.GetPrice().GetSide().String(),
-		Exchange:      mk.GetExchange(),
-		ResultFilters: q.RunnerFilters,
+	query := classify.MatcherQuery{
+		EventID:       mk.EventId,
+		ResultFilters: q.ResultFilters,
 		StatFilters:   q.StatFilters,
 	}
 
-	trade, err := t.factory.CreateTrade(ctx, &query)
+	matches, err := t.matcher.MatchesFilters(ctx, &query)
 
 	if err != nil {
 		t.logger.Errorf(
@@ -77,29 +60,16 @@ func (t *tradeFinder) filterMarket(ctx context.Context, ch chan<- *statistico.St
 		return
 	}
 
-	if trade != nil {
-		tr, err := transformTradeResultToStrategyTrade(trade)
-
-		if err != nil {
-			t.logger.Errorf(
-				"error converting trade for market %s, runner %s and event %d: %s",
-				mk.MarketName,
-				mk.RunnerName,
-				mk.EventId,
-				err.Error(),
-			)
-			return
-		}
-
-		ch <- tr
+	if matches {
+		ch <- nil
 	}
 
 	wg.Done()
 }
 
-func NewTradeFinder(f market.TradeFactory, l *logrus.Logger) TradeFinder {
+func NewTradeFinder(m classify.FilterMatcher, l *logrus.Logger) TradeFinder {
 	return &tradeFinder{
-		factory: f,
+		matcher: m,
 		logger:  l,
 	}
 }

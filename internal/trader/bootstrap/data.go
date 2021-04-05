@@ -1,6 +1,6 @@
 package bootstrap
 
-import statisticodata "github.com/statistico/statistico-data-go-grpc-client"
+import "github.com/statistico/statistico-data-go-grpc-client"
 
 func (c Container) DataServiceResultClient() statisticodata.ResultClient {
 	return statisticodata.NewResultClient(c.GrpcResultClient())

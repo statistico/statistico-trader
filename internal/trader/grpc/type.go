@@ -7,6 +7,6 @@ import (
 
 type TradeQuery struct {
 	Markets       <-chan *statistico.MarketRunner
-	RunnerFilters []*trader.ResultFilter
+	ResultFilters []*trader.ResultFilter
 	StatFilters   []*trader.StatFilter
 }
