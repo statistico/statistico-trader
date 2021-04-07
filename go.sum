@@ -188,10 +188,6 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/sirupsen/logrus v1.7.0 h1:ShrD1U9pZB12TX0cVy0DtePoCH97K8EtX+mg7ZARUtM=
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
-github.com/statistico/statistico-betfair-go-client v0.0.0-20201023150329-c5c14d4fe285 h1:uEbZsMjIxK1kQR2XzD8uVqlDZtZMhT0D40jiXpm3+VA=
-github.com/statistico/statistico-betfair-go-client v0.0.0-20201023150329-c5c14d4fe285/go.mod h1:PxFoHm36FOkMDZzpbQBL6/zvO9uYfvbahyrQ6kMbk2s=
-github.com/statistico/statistico-betfair-go-client v0.0.0-20210407075151-56ff1c4ecbed h1:ml5cUrH+qm9ujSd2jgl3pRphk6nh4oYIf5lM1FI/Z4Q=
-github.com/statistico/statistico-betfair-go-client v0.0.0-20210407075151-56ff1c4ecbed/go.mod h1:PxFoHm36FOkMDZzpbQBL6/zvO9uYfvbahyrQ6kMbk2s=
 github.com/statistico/statistico-betfair-go-client v0.0.0-20210407110526-c811e57a1780 h1:NU9EgNzJSS3c0wIgLFWnM0a/PS2A/IbKIvw2j0UfmKw=
 github.com/statistico/statistico-betfair-go-client v0.0.0-20210407110526-c811e57a1780/go.mod h1:PxFoHm36FOkMDZzpbQBL6/zvO9uYfvbahyrQ6kMbk2s=
 github.com/statistico/statistico-data-go-grpc-client v0.0.0-20210317184121-2d206ae02b3e h1:DAKlgFessmXl7/L91g1L3jqaubaBpahSneW1dSrGOF0=
@@ -525,6 +521,7 @@ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 h1:qIbj1fsPNlZgppZ+VLlY7N33q108Sa+fhmuc+sWQYwY=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 h1:YR8cESwS4TdDjEe65xsg0ogRM/Nc3DYOhEAlW+xobZo=
 gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/errgo.v2 v2.1.0/go.mod h1:hNsd1EY+bozCKY1Ytp96fpM3vjJbqLJn88ws8XvfDNI=
 gopkg.in/yaml.v2 v2.2.2 h1:ZCJp+EgiOT7lHqUV2J862kp8Qj64Jo6az82+3Td9dZw=
