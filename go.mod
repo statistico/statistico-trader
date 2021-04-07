@@ -15,7 +15,7 @@ require (
 	github.com/lestrrat-go/jwx v1.1.6
 	github.com/lib/pq v1.10.0
 	github.com/sirupsen/logrus v1.7.0
-	github.com/statistico/statistico-betfair-go-client v0.0.0-20201023150329-c5c14d4fe285 // indirect
+	github.com/statistico/statistico-betfair-go-client v0.0.0-20210407110526-c811e57a1780
 	github.com/statistico/statistico-data-go-grpc-client v0.0.0-20210317184121-2d206ae02b3e
 	github.com/statistico/statistico-odds-warehouse-go-grpc-client v0.0.0-20210127144902-9f8171a689ae
 	github.com/statistico/statistico-proto/go v0.0.0-20210331152332-2c6719a92a63
