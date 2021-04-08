@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"github.com/statistico/statistico-strategy/internal/trader/classify"
+	"github.com/statistico/statistico-trader/internal/trader/classify"
 )
 
 func (c Container) FilterMatcher() classify.FilterMatcher {

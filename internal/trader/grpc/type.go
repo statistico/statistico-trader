@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader"
 )
 
 type TradeQuery struct {

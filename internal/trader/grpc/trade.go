@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader/classify"
+	"github.com/statistico/statistico-trader/internal/trader/classify"
 	"sync"
 )
 

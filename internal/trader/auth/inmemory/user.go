@@ -2,7 +2,7 @@ package inmemory
 
 import (
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-strategy/internal/trader/auth"
+	"github.com/statistico/statistico-trader/internal/trader/auth"
 )
 
 type userService struct {

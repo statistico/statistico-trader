@@ -55,7 +55,7 @@ func logger(config *Config) *logrus.Logger {
 	logger.SetOutput(os.Stdout)
 
 	tags := map[string]string{
-		"application": "statistico-strategy",
+		"application": "statistico-trader",
 	}
 
 	levels := []logrus.Level{

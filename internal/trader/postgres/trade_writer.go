@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"database/sql"
-	"github.com/statistico/statistico-strategy/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader"
 )
 
 type TradeWriter struct {

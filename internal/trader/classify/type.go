@@ -1,7 +1,7 @@
 package classify
 
 import (
-	"github.com/statistico/statistico-strategy/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader"
 	"time"
 )
 

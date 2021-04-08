@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/grpc-ecosystem/go-grpc-middleware/util/metautils"
 	"github.com/sirupsen/logrus/hooks/test"
-	"github.com/statistico/statistico-strategy/internal/trader/auth"
+	"github.com/statistico/statistico-trader/internal/trader/auth"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/metadata"
 	"os"

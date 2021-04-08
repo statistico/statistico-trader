@@ -1,4 +1,4 @@
-module github.com/statistico/statistico-strategy
+module github.com/statistico/statistico-trader
 
 go 1.13
 
