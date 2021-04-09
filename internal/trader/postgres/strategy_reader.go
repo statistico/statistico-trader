@@ -5,7 +5,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"github.com/statistico/statistico-strategy/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader"
 	"time"
 )
 

@@ -2,7 +2,7 @@ package inmemory_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-strategy/internal/trader/auth/inmemory"
+	"github.com/statistico/statistico-trader/internal/trader/auth/inmemory"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

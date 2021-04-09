@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

@@ -1,8 +1,8 @@
 package bootstrap
 
 import (
-	"github.com/statistico/statistico-strategy/internal/trader/auth"
-	"github.com/statistico/statistico-strategy/internal/trader/auth/inmemory"
+	"github.com/statistico/statistico-trader/internal/trader/auth"
+	"github.com/statistico/statistico-trader/internal/trader/auth/inmemory"
 )
 
 func (c Container) TokenAuthoriser() auth.TokenAuthoriser {

@@ -2,9 +2,9 @@ package postgres_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-strategy/internal/trader"
-	"github.com/statistico/statistico-strategy/internal/trader/postgres"
-	"github.com/statistico/statistico-strategy/internal/trader/test"
+	"github.com/statistico/statistico-trader/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader/postgres"
+	"github.com/statistico/statistico-trader/internal/trader/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

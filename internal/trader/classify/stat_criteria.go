@@ -3,7 +3,7 @@ package classify
 import (
 	"fmt"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader"
 )
 
 func statMeetsCriteria(rs []*statistico.Result, teamID uint64, f *trader.StatFilter) (bool, error) {

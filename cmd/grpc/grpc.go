@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader/bootstrap"
+	"github.com/statistico/statistico-trader/internal/trader/bootstrap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"

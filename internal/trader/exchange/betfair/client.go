@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/jonboulle/clockwork"
 	"github.com/statistico/statistico-betfair-go-client"
-	"github.com/statistico/statistico-strategy/internal/trader/exchange"
+	"github.com/statistico/statistico-trader/internal/trader/exchange"
 )
 
 const (

@@ -1,6 +1,6 @@
 package bootstrap
 
-import "github.com/statistico/statistico-strategy/internal/trader/grpc"
+import "github.com/statistico/statistico-trader/internal/trader/grpc"
 
 func (c Container) GrpcStrategyService() *grpc.StrategyService {
 	return grpc.NewStrategyService(

@@ -6,8 +6,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-odds-warehouse-go-grpc-client"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-strategy/internal/trader"
-	"github.com/statistico/statistico-strategy/internal/trader/errors"
+	"github.com/statistico/statistico-trader/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
