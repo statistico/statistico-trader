@@ -1,10 +1,9 @@
-package classify_test
+package strategy_test
 
 import (
 	"context"
 	"errors"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader/classify"
 	mock2 "github.com/statistico/statistico-trader/internal/trader/mock"
 	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/stretchr/testify/assert"
@@ -55,7 +54,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 	results := []*strategy.ResultFilter{f1, f2}
 	stats := []*strategy.StatFilter{f3, f4}
 
-	query := classify.MatcherQuery{
+	query := strategy.MatcherQuery{
 		EventID:       192810,
 		ResultFilters: results,
 		StatFilters:   stats,
@@ -70,7 +69,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 		DateTime:    &statistico.Date{Utc: 1616052304},
 	}
 
-	fix := classify.Fixture{
+	fix := strategy.Fixture{
 		ID:         192810,
 		HomeTeamID: 5,
 		AwayTeamID: 10,
@@ -93,7 +92,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 		sc.On("MatchesFilter", ctx, &fix, f3).Return(true, nil)
 		sc.On("MatchesFilter", ctx, &fix, f4).Return(true, nil)
 
-		matcher := classify.NewFilterMatcher(fc, rc, sc)
+		matcher := strategy.NewFilterMatcher(fc, rc, sc)
 
 		matches, err := matcher.MatchesFilters(ctx, &query)
 
@@ -120,7 +119,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 
 		sc.AssertNotCalled(t, "MatchesFilter")
 
-		matcher := classify.NewFilterMatcher(fc, rc, sc)
+		matcher := strategy.NewFilterMatcher(fc, rc, sc)
 
 		matches, err := matcher.MatchesFilters(ctx, &query)
 
@@ -148,7 +147,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 		sc.On("MatchesFilter", ctx, &fix, f3).Return(true, nil)
 		sc.On("MatchesFilter", ctx, &fix, f4).Return(false, nil)
 
-		matcher := classify.NewFilterMatcher(fc, rc, sc)
+		matcher := strategy.NewFilterMatcher(fc, rc, sc)
 
 		matches, err := matcher.MatchesFilters(ctx, &query)
 
@@ -177,7 +176,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 
 		sc.AssertNotCalled(t, "MatchesFilter")
 
-		matcher := classify.NewFilterMatcher(fc, rc, sc)
+		matcher := strategy.NewFilterMatcher(fc, rc, sc)
 
 		_, err := matcher.MatchesFilters(ctx, &query)
 
@@ -207,7 +206,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 		sc.On("MatchesFilter", ctx, &fix, f3).Return(true, nil)
 		sc.On("MatchesFilter", ctx, &fix, f4).Return(false, e)
 
-		matcher := classify.NewFilterMatcher(fc, rc, sc)
+		matcher := strategy.NewFilterMatcher(fc, rc, sc)
 
 		_, err := matcher.MatchesFilters(ctx, &query)
 
@@ -225,7 +224,7 @@ type MockResultClassifier struct {
 	mock.Mock
 }
 
-func (m *MockResultClassifier) MatchesFilter(ctx context.Context, fix *classify.Fixture, f *strategy.ResultFilter) (bool, error) {
+func (m *MockResultClassifier) MatchesFilter(ctx context.Context, fix *strategy.Fixture, f *strategy.ResultFilter) (bool, error) {
 	args := m.Called(ctx, fix, f)
 	return args.Get(0).(bool), args.Error(1)
 }
@@ -234,7 +233,7 @@ type MockStatClassifier struct {
 	mock.Mock
 }
 
-func (m *MockStatClassifier) MatchesFilter(ctx context.Context, fix *classify.Fixture, f *strategy.StatFilter) (bool, error) {
+func (m *MockStatClassifier) MatchesFilter(ctx context.Context, fix *strategy.Fixture, f *strategy.StatFilter) (bool, error) {
 	args := m.Called(ctx, fix, f)
 	return args.Get(0).(bool), args.Error(1)
 }

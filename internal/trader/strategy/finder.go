@@ -3,14 +3,13 @@ package strategy
 import (
 	"context"
 	"github.com/sirupsen/logrus"
-	"github.com/statistico/statistico-trader/internal/trader/classify"
 	"github.com/statistico/statistico-trader/internal/trader/market"
 	"sync"
 )
 
 type finder struct {
 	reader   Reader
-	matcher  classify.FilterMatcher
+	matcher  FilterMatcher
 	logger   *logrus.Logger
 }
 
@@ -54,7 +53,7 @@ func (h *finder) findStrategies(ctx context.Context, m *market.Runner, ch chan<-
 }
 
 func (h *finder) filterStrategy(ctx context.Context, s *Strategy, eventID uint64, ch chan<- *Strategy, wg *sync.WaitGroup) {
-	query := classify.MatcherQuery{
+	query := MatcherQuery{
 		EventID:       eventID,
 		ResultFilters: nil,
 		StatFilters:   nil,
@@ -75,10 +74,10 @@ func (h *finder) filterStrategy(ctx context.Context, s *Strategy, eventID uint64
 	wg.Done()
 }
 
-func NewFinder(r Reader, c classify.FilterMatcher, l *logrus.Logger) Finder {
+func NewFinder(r Reader, f FilterMatcher, l *logrus.Logger) Finder {
 	return &finder{
 		reader:  r,
-		matcher: c,
+		matcher: f,
 		logger:  l,
 	}
 }
