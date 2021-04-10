@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	Active = "ACTIVE"
 	PercentageStakingPlan = "PERCENTAGE"
 )
 
