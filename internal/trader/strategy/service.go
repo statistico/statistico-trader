@@ -27,5 +27,5 @@ type ReaderQuery struct {
 }
 
 type Finder interface {
-	AddMatchingStrategies(ctx context.Context, m *market.Runner, ch chan<- *Strategy)
+	FindMatchingStrategies(ctx context.Context, m *market.Runner) <-chan *Strategy
 }
