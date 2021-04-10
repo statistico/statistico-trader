@@ -13,8 +13,19 @@ type finder struct {
 	logger   *logrus.Logger
 }
 
-func (h *finder) AddMatchingStrategies(ctx context.Context, m *market.Runner, ch chan<- *Strategy) {
+func (h *finder) FindMatchingStrategies(ctx context.Context, m *market.Runner) <-chan *Strategy {
+	ch := make(chan *Strategy, 100)
+
+	go h.findStrategies(ctx, m, ch)
+
+	return ch
+}
+
+func (h *finder) findStrategies(ctx context.Context, m *market.Runner, ch chan<- *Strategy) {
+	defer close(ch)
+
 	var wg sync.WaitGroup
+
 	active := Active
 
 	query := ReaderQuery{
@@ -35,7 +46,7 @@ func (h *finder) AddMatchingStrategies(ctx context.Context, m *market.Runner, ch
 
 	for _, s := range st {
 		wg.Add(1)
-		go h.filterStrategy(ctx, s, m.EventID, ch, &wg)
+		h.filterStrategy(ctx, s, m.EventID, ch, &wg)
 	}
 
 	wg.Wait()
