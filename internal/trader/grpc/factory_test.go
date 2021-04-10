@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -58,7 +58,7 @@ func TestStrategyFromRequest(t *testing.T) {
 			t.Fatalf("Expected nil, got %s", err.Error())
 		}
 
-		res := []*trader.ResultFilter{
+		res := []*strategy.ResultFilter{
 			{
 				Team:   "HOME_TEAM",
 				Result: "WIN_DRAW",
@@ -67,7 +67,7 @@ func TestStrategyFromRequest(t *testing.T) {
 			},
 		}
 
-		stat := []*trader.StatFilter{
+		stat := []*strategy.StatFilter{
 			{
 				Stat:    "GOALS",
 				Team:    "HOME_TEAM",
@@ -80,7 +80,7 @@ func TestStrategyFromRequest(t *testing.T) {
 			},
 		}
 
-		plan := trader.StakingPlan{
+		plan := strategy.StakingPlan{
 			Name:   "PERCENTAGE",
 			Number: 2.5,
 		}

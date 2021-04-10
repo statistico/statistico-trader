@@ -1,9 +1,8 @@
-package classify
+package strategy
 
 import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -132,7 +131,7 @@ func Test_parseStatValues(t *testing.T) {
 		tc := []struct {
 			Results  []*statistico.Result
 			TeamID   uint64
-			Filter   *trader.StatFilter
+			Filter   *StatFilter
 			Expected []uint32
 		}{
 			{
@@ -151,7 +150,7 @@ func Test_parseStatValues(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:   "GOALS",
 					Action: "FOR",
 				},
@@ -173,7 +172,7 @@ func Test_parseStatValues(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:   "GOALS",
 					Action: "AGAINST",
 				},
@@ -213,7 +212,7 @@ func Test_parseStatValues(t *testing.T) {
 			},
 		}
 
-		filter := &trader.StatFilter{
+		filter := &StatFilter{
 			Stat:   "GOALS",
 			Action: "FOR",
 		}
@@ -235,7 +234,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 		tc := []struct {
 			Results []*statistico.Result
 			TeamID  uint64
-			Filter  *trader.StatFilter
+			Filter  *StatFilter
 		}{
 			{
 				Results: []*statistico.Result{
@@ -253,7 +252,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "GOALS",
 					Action:  "FOR",
 					Measure: "TOTAL",
@@ -277,7 +276,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "GOALS",
 					Action:  "AGAINST",
 					Measure: "TOTAL",
@@ -301,7 +300,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "AVERAGE",
@@ -325,7 +324,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "AVERAGE",
@@ -349,7 +348,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "CONTINUOUS",
@@ -373,7 +372,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "CONTINUOUS",
@@ -400,7 +399,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 		tc := []struct {
 			Results []*statistico.Result
 			TeamID  uint64
-			Filter  *trader.StatFilter
+			Filter  *StatFilter
 		}{
 			{
 				Results: []*statistico.Result{
@@ -418,7 +417,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "GOALS",
 					Action:  "FOR",
 					Measure: "TOTAL",
@@ -442,7 +441,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "GOALS",
 					Action:  "AGAINST",
 					Measure: "TOTAL",
@@ -469,7 +468,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "AVERAGE",
@@ -493,7 +492,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "AVERAGE",
@@ -520,7 +519,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "CONTINUOUS",
@@ -544,7 +543,7 @@ func Test_statMeetsCriteria(t *testing.T) {
 					},
 				},
 				TeamID: 55,
-				Filter: &trader.StatFilter{
+				Filter: &StatFilter{
 					Stat:    "SHOTS_ON_GOAL",
 					Action:  "AGAINST",
 					Measure: "CONTINUOUS",

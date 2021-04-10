@@ -6,15 +6,15 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-odds-warehouse-go-grpc-client"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"github.com/statistico/statistico-trader/internal/trader/errors"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type StrategyService struct {
-	writer     trader.StrategyWriter
-	reader     trader.StrategyReader
+	writer     strategy.Writer
+	reader     strategy.Reader
 	oddsClient statisticooddswarehouse.MarketClient
 	logger     *logrus.Logger
 	clock      clockwork.Clock
@@ -63,13 +63,13 @@ func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stre
 }
 
 func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveStrategyRequest) (*statistico.Strategy, error) {
-	strategy, err := strategyFromRequest(ctx, r, s.clock.Now())
+	st, err := strategyFromRequest(ctx, r, s.clock.Now())
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.writer.Insert(strategy)
+	err = s.writer.Insert(st)
 
 	if err != nil {
 		if de, ok := err.(*errors.DuplicationError); ok {
@@ -79,7 +79,7 @@ func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveSt
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	return convertToStatisticoStrategy(strategy), nil
+	return convertToStatisticoStrategy(st), nil
 }
 
 func (s *StrategyService) ListUserStrategies(r *statistico.ListUserStrategiesRequest, stream statistico.StrategyService_ListUserStrategiesServer) error {
@@ -106,8 +106,8 @@ func (s *StrategyService) ListUserStrategies(r *statistico.ListUserStrategiesReq
 }
 
 func NewStrategyService(
-	w trader.StrategyWriter,
-	r trader.StrategyReader,
+	w strategy.Writer,
+	r strategy.Reader,
 	c statisticooddswarehouse.MarketClient,
 	l *logrus.Logger,
 	cl clockwork.Clock,

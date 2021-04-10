@@ -1,4 +1,4 @@
-package classify
+package strategy
 
 import "github.com/statistico/statistico-proto/go"
 

@@ -1,12 +1,11 @@
-package classify
+package strategy
 
 import (
 	"fmt"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
 )
 
-func statMeetsCriteria(rs []*statistico.Result, teamID uint64, f *trader.StatFilter) (bool, error) {
+func statMeetsCriteria(rs []*statistico.Result, teamID uint64, f *StatFilter) (bool, error) {
 	values, err := parseStatValues(rs, teamID, f)
 
 	if err != nil {
@@ -25,7 +24,7 @@ func statMeetsCriteria(rs []*statistico.Result, teamID uint64, f *trader.StatFil
 	}
 }
 
-func parseStatValues(rs []*statistico.Result, teamID uint64, f *trader.StatFilter) ([]uint32, error) {
+func parseStatValues(rs []*statistico.Result, teamID uint64, f *StatFilter) ([]uint32, error) {
 	var values []uint32
 
 	for _, res := range rs {
