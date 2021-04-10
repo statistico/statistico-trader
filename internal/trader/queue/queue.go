@@ -1,5 +1,7 @@
 package queue
 
+import "time"
+
 type MarketQueue interface {
 	ReceiveMarkets() <-chan *EventMarket
 }
@@ -10,7 +12,7 @@ type EventMarket struct {
 	Name          string    `json:"name"`
 	CompetitionID uint64    `json:"competitionId"`
 	SeasonID      uint64    `json:"seasonId"`
-	EventDate     string    `json:"date"`
+	EventDate     time.Time `json:"date"`
 	Exchange      string    `json:"exchange"`
 	Runners       []*Runner `json:"runners"`
 	Timestamp     int64     `json:"timestamp"`

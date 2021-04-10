@@ -19,5 +19,4 @@ type Price struct {
 	Value     float32   `json:"price"`
 	Size      float32   `json:"size"`
 	Side      string    `json:"side"`
-	Timestamp time.Time `json:"timestamp"`
 }
