@@ -13,7 +13,7 @@ type finder struct {
 	logger   *logrus.Logger
 }
 
-func (h *finder) FindMatchingStrategies(ctx context.Context, m *market.Runner, ch chan<- *Strategy) {
+func (h *finder) AddMatchingStrategies(ctx context.Context, m *market.Runner, ch chan<- *Strategy) {
 	var wg sync.WaitGroup
 	active := Active
 
