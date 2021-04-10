@@ -1,6 +1,12 @@
 package trade
 
-import "github.com/google/uuid"
+import (
+	"context"
+	"github.com/google/uuid"
+	"github.com/statistico/statistico-trader/internal/trader/exchange"
+	"github.com/statistico/statistico-trader/internal/trader/market"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
+)
 
 type Writer interface {
 	Insert(t *Trade) error
@@ -14,4 +20,8 @@ type Reader interface {
 type ReaderQuery struct {
 	StrategyID   uuid.UUID
 	Result       []string
+}
+
+type Manager interface {
+	PlaceTrade(ctx context.Context, c exchange.Client, r *market.Runner, s strategy.Strategy) (*Trade, error)
 }

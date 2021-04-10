@@ -10,10 +10,6 @@ import (
 	"math"
 )
 
-type Manager interface {
-	PlaceTrade(ctx context.Context, c exchange.Client, r *market.Runner, s strategy.Strategy) (*Trade, error)
-}
-
 type manager struct {
 	reader Reader
 	writer Writer

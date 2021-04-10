@@ -1,6 +1,10 @@
 package strategy
 
-import "github.com/google/uuid"
+import (
+	"context"
+	"github.com/google/uuid"
+	"github.com/statistico/statistico-trader/internal/trader/market"
+)
 
 type Writer interface {
 	Insert(s *Strategy) error
@@ -22,3 +26,6 @@ type ReaderQuery struct {
 	OrderBy    *string
 }
 
+type Finder interface {
+	FindMatchingStrategies(ctx context.Context, m *market.Runner) <-chan *Strategy
+}

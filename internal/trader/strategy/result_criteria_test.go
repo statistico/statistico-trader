@@ -1,4 +1,4 @@
-package classify
+package strategy
 
 import (
 	"github.com/golang/protobuf/ptypes/wrappers"

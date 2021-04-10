@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader/classify"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"sync"
 )
 
@@ -13,7 +13,7 @@ type TradeFinder interface {
 }
 
 type tradeFinder struct {
-	matcher classify.FilterMatcher
+	matcher strategy.FilterMatcher
 	logger  *logrus.Logger
 }
 
@@ -39,7 +39,7 @@ func (t *tradeFinder) handleMarkets(ctx context.Context, ch chan<- *statistico.S
 }
 
 func (t *tradeFinder) filterMarket(ctx context.Context, ch chan<- *statistico.StrategyTrade, mk *statistico.MarketRunner, q *TradeQuery, wg *sync.WaitGroup) {
-	query := classify.MatcherQuery{
+	query := strategy.MatcherQuery{
 		EventID:       mk.EventId,
 		ResultFilters: q.ResultFilters,
 		StatFilters:   q.StatFilters,
@@ -67,7 +67,7 @@ func (t *tradeFinder) filterMarket(ctx context.Context, ch chan<- *statistico.St
 	wg.Done()
 }
 
-func NewTradeFinder(m classify.FilterMatcher, l *logrus.Logger) TradeFinder {
+func NewTradeFinder(m strategy.FilterMatcher, l *logrus.Logger) TradeFinder {
 	return &tradeFinder{
 		matcher: m,
 		logger:  l,
