@@ -22,12 +22,11 @@ type handler struct {
 
 func (h *handler) HandleEventMarket(e *queue.EventMarket) error {
 	wg := sync.WaitGroup{}
-	ch := make(chan *strategy.Strategy, 100)
 
 	for _, runner := range e.Runners {
 		wg.Add(1)
 
-		go h.handleBackRunner(e, runner, ch, &wg)
+		go h.handleBackRunner(e, runner, &wg)
 		
 		// Loop over strategies and pass individual strategy to Trade Service / Strategy Handler in go routine
 
@@ -37,9 +36,8 @@ func (h *handler) HandleEventMarket(e *queue.EventMarket) error {
 	wg.Wait()
 }
 
-func (h *handler) handleBackRunner(e *queue.EventMarket, r *queue.Runner, ch chan<- *strategy.Strategy, wg *sync.WaitGroup) {
+func (h *handler) handleBackRunner(e *queue.EventMarket, r *queue.Runner, wg *sync.WaitGroup) {
 	if len(r.BackPrices) < 1 {
-		wg.Done()
 		return
 	}
 
@@ -62,7 +60,12 @@ func (h *handler) handleBackRunner(e *queue.EventMarket, r *queue.Runner, ch cha
 		},
 	}
 
-	h.finder.FindMatchingStrategies(context.Background(), &mk, ch)
+	st := h.finder.FindMatchingStrategies(context.Background(), &mk)
+
+	for s := range st {
+		wg.Add(1)
+		// Place trade via a strategy / trade handler service
+	}
 
 	wg.Done()
 }
