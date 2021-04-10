@@ -1,14 +1,13 @@
 package bootstrap
 
 import (
-	"github.com/statistico/statistico-trader/internal/trader"
-	"github.com/statistico/statistico-trader/internal/trader/postgres"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 )
 
-func (c Container) StrategyWriter() trader.StrategyWriter {
-	return postgres.NewStrategyWriter(c.Database)
+func (c Container) StrategyWriter() strategy.Writer {
+	return strategy.NewPostgresWriter(c.Database)
 }
 
-func (c Container) StrategyReader() trader.StrategyReader {
-	return postgres.NewStrategyReader(c.Database)
+func (c Container) StrategyReader() strategy.Reader {
+	return strategy.NewPostgresReader(c.Database)
 }

@@ -5,19 +5,19 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/statistico/statistico-data-go-grpc-client"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"time"
 )
 
 type StatFilterClassifier interface {
-	MatchesFilter(ctx context.Context, fix *Fixture, f *trader.StatFilter) (bool, error)
+	MatchesFilter(ctx context.Context, fix *Fixture, f *strategy.StatFilter) (bool, error)
 }
 
 type statFilterClassifier struct {
 	resultClient statisticodata.ResultClient
 }
 
-func (s *statFilterClassifier) MatchesFilter(ctx context.Context, fix *Fixture, f *trader.StatFilter) (bool, error) {
+func (s *statFilterClassifier) MatchesFilter(ctx context.Context, fix *Fixture, f *strategy.StatFilter) (bool, error) {
 	teamID, err := parseTeamID(fix, f.Team)
 
 	if err != nil {

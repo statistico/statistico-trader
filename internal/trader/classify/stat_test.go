@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"github.com/statistico/statistico-trader/internal/trader/classify"
 	m "github.com/statistico/statistico-trader/internal/trader/mock"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -20,7 +20,7 @@ func TestStatClassifier_MatchesFilter(t *testing.T) {
 		assertions := []struct {
 			Fixture        *classify.Fixture
 			FetchedResults []*statistico.Result
-			Filter         *trader.StatFilter
+			Filter         *strategy.StatFilter
 		}{
 			{
 				Fixture: &classify.Fixture{
@@ -35,7 +35,7 @@ func TestStatClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 1, 4),
 					newProtoResult(1, 10, 2, 0),
 				},
-				Filter: &trader.StatFilter{
+				Filter: &strategy.StatFilter{
 					Stat:    "GOALS",
 					Team:    "HOME_TEAM",
 					Action:  "FOR",
@@ -59,7 +59,7 @@ func TestStatClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 1, 4),
 					newProtoResult(1, 10, 2, 0),
 				},
-				Filter: &trader.StatFilter{
+				Filter: &strategy.StatFilter{
 					Stat:    "GOALS",
 					Team:    "HOME_TEAM",
 					Action:  "FOR",
@@ -106,7 +106,7 @@ func TestStatClassifier_MatchesFilter(t *testing.T) {
 		assertions := []struct {
 			Fixture        *classify.Fixture
 			FetchedResults []*statistico.Result
-			Filter         *trader.StatFilter
+			Filter         *strategy.StatFilter
 		}{
 			{
 				Fixture: &classify.Fixture{
@@ -121,7 +121,7 @@ func TestStatClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 1, 4),
 					newProtoResult(1, 10, 2, 0),
 				},
-				Filter: &trader.StatFilter{
+				Filter: &strategy.StatFilter{
 					Stat:    "GOALS",
 					Team:    "HOME_TEAM",
 					Action:  "FOR",
@@ -145,7 +145,7 @@ func TestStatClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 1, 4),
 					newProtoResult(1, 10, 2, 0),
 				},
-				Filter: &trader.StatFilter{
+				Filter: &strategy.StatFilter{
 					Stat:    "GOALS",
 					Team:    "HOME_TEAM",
 					Action:  "FOR",
@@ -208,7 +208,7 @@ func TestStatClassifier_MatchesFilter(t *testing.T) {
 
 		ctx := context.Background()
 
-		filter := &trader.StatFilter{
+		filter := &strategy.StatFilter{
 			Stat:    "GOALS",
 			Team:    "AWAY_TEAM",
 			Action:  "FOR",

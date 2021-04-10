@@ -1,10 +1,9 @@
-package postgres_test
+package trade_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-trader/internal/trader"
-	"github.com/statistico/statistico-trader/internal/trader/postgres"
 	"github.com/statistico/statistico-trader/internal/trader/test"
+	"github.com/statistico/statistico-trader/internal/trader/trade"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -12,14 +11,14 @@ import (
 
 func TestTradeWriter_Insert(t *testing.T) {
 	conn, cleanUp := test.GetConnection(t, []string{"trade"})
-	writer := postgres.NewTradeWriter(conn)
+	writer := trade.NewPostgresWriter(conn)
 
 	t.Run("increases table count", func(t *testing.T) {
 		t.Helper()
 		defer cleanUp()
 
 		tradeCounts := []struct{
-			Trade   *trader.Trade
+			Trade   *trade.Trade
 			TradeCount    uint8
 		} {
 			{
@@ -52,14 +51,14 @@ func TestTradeWriter_Insert(t *testing.T) {
 	})
 }
 
-func insertTrade(t *testing.T, w trader.TradeWriter, tr *trader.Trade) {
+func insertTrade(t *testing.T, w trade.Writer, tr *trade.Trade) {
 	if err := w.Insert(tr); err != nil {
 		t.Fatalf("Error inserting trade: %s", err.Error())
 	}
 }
 
-func newTrade(strategyID uuid.UUID, result string) *trader.Trade {
-	return &trader.Trade{
+func newTrade(strategyID uuid.UUID, result string) *trade.Trade {
+	return &trade.Trade{
 		ID:          uuid.New(),
 		StrategyID:  strategyID,
 		Exchange:    "betfair",

@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 )
 
 // Transform a market Trade struct into a statistico StrategyTrade struct to be consumed within the grpc package
@@ -27,11 +27,11 @@ import (
 //}
 
 // Transform statistico ResultFilter structs into trade ResultFilter structs to be consumed within the trade package
-func transformResultFilters(f []*statistico.ResultFilter) []*trader.ResultFilter {
-	r := []*trader.ResultFilter{}
+func transformResultFilters(f []*statistico.ResultFilter) []*strategy.ResultFilter {
+	r := []*strategy.ResultFilter{}
 
 	for _, filter := range f {
-		s := &trader.ResultFilter{
+		s := &strategy.ResultFilter{
 			Team:   filter.Team.String(),
 			Result: filter.Result.String(),
 			Games:  uint8(filter.Games),
@@ -45,11 +45,11 @@ func transformResultFilters(f []*statistico.ResultFilter) []*trader.ResultFilter
 }
 
 // Transform statistico StatFilter structs into trade StatFilter structs to be consumed within the trade package
-func transformStatFilters(f []*statistico.StatFilter) []*trader.StatFilter {
-	s := []*trader.StatFilter{}
+func transformStatFilters(f []*statistico.StatFilter) []*strategy.StatFilter {
+	s := []*strategy.StatFilter{}
 
 	for _, filter := range f {
-		sf := &trader.StatFilter{
+		sf := &strategy.StatFilter{
 			Stat:    filter.Stat.String(),
 			Team:    filter.Team.String(),
 			Action:  filter.Action.String(),

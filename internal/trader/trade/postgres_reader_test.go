@@ -1,18 +1,17 @@
-package postgres_test
+package trade_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-trader/internal/trader"
-	"github.com/statistico/statistico-trader/internal/trader/postgres"
 	"github.com/statistico/statistico-trader/internal/trader/test"
+	"github.com/statistico/statistico-trader/internal/trader/trade"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestTradeReader_Get(t *testing.T) {
 	conn, cleanUp := test.GetConnection(t, []string{"trade"})
-	writer := postgres.NewTradeWriter(conn)
-	reader := postgres.NewTradeReader(conn)
+	writer := trade.NewPostgresWriter(conn)
+	reader := trade.NewPostgresReader(conn)
 
 	t.Run("returns a slice of trade.Trade struct", func(t *testing.T) {
 		t.Helper()
@@ -25,7 +24,7 @@ func TestTradeReader_Get(t *testing.T) {
 		insertTrade(t, writer, newTrade(strategyID, "FAIL"))
 		insertTrade(t, writer, newTrade(strategyID, "IN_PLAY"))
 
-		query := trader.TradeReaderQuery{StrategyID: strategyID}
+		query := trade.ReaderQuery{StrategyID: strategyID}
 
 		trades, err := reader.Get(&query)
 
@@ -50,25 +49,25 @@ func TestTradeReader_Get(t *testing.T) {
 		insertTrade(t, writer, newTrade(stIdOne, "SUCCESS"))
 
 		tradeCounts := []struct{
-			Query  *trader.TradeReaderQuery
+			Query  *trade.ReaderQuery
 			Count  int
 		} {
 			{
-				&trader.TradeReaderQuery{
+				&trade.ReaderQuery{
 					StrategyID: stIdOne,
 					Result:     []string{"IN_PLAY", "FAIL"},
 				},
 				2,
 			},
 			{
-				&trader.TradeReaderQuery{
+				&trade.ReaderQuery{
 					StrategyID: stIdTwo,
 					Result:     []string{"IN_PLAY", "FAIL"},
 				},
 				1,
 			},
 			{
-				&trader.TradeReaderQuery{
+				&trade.ReaderQuery{
 					StrategyID: stIdOne,
 					Result:     []string{"SUCCESS", "FAIL"},
 				},

@@ -1,19 +1,17 @@
-package postgres
+package strategy
 
 import (
 	"database/sql"
-	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"github.com/statistico/statistico-trader/internal/trader/errors"
 )
 
-type strategyWriter struct {
+type PostgresWriter struct {
 	connection *sql.DB
 }
 
-func (w *strategyWriter) Insert(s *trader.Strategy) error {
+func (w *PostgresWriter) Insert(s *Strategy) error {
 	var exists bool
 
 	err := w.connection.
@@ -80,7 +78,7 @@ func (w *strategyWriter) Insert(s *trader.Strategy) error {
 	return err
 }
 
-func (w *strategyWriter) insertResultFilters(strategyID uuid.UUID, f []*trader.ResultFilter) error {
+func (w *PostgresWriter) insertResultFilters(strategyID uuid.UUID, f []*ResultFilter) error {
 	builder := queryBuilder(w.connection)
 
 	for _, filter := range f {
@@ -110,7 +108,7 @@ func (w *strategyWriter) insertResultFilters(strategyID uuid.UUID, f []*trader.R
 	return nil
 }
 
-func (w *strategyWriter) insertStatFilters(strategyID uuid.UUID, f []*trader.StatFilter) error {
+func (w *PostgresWriter) insertStatFilters(strategyID uuid.UUID, f []*StatFilter) error {
 	builder := queryBuilder(w.connection)
 
 	for _, filter := range f {
@@ -148,10 +146,6 @@ func (w *strategyWriter) insertStatFilters(strategyID uuid.UUID, f []*trader.Sta
 	return nil
 }
 
-func queryBuilder(c *sql.DB) sq.StatementBuilderType {
-	return sq.StatementBuilder.PlaceholderFormat(sq.Dollar).RunWith(c)
-}
-
-func NewStrategyWriter(connection *sql.DB) trader.StrategyWriter {
-	return &strategyWriter{connection: connection}
+func NewPostgresWriter(connection *sql.DB) Writer {
+	return &PostgresWriter{connection: connection}
 }

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"github.com/statistico/statistico-trader/internal/trader/classify"
 	m "github.com/statistico/statistico-trader/internal/trader/mock"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -21,7 +21,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 		assertions := []struct {
 			Fixture        *classify.Fixture
 			FetchedResults []*statistico.Result
-			Filter         *trader.ResultFilter
+			Filter         *strategy.ResultFilter
 		}{
 			{
 				Fixture: &classify.Fixture{
@@ -36,7 +36,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 1, 4),
 					newProtoResult(1, 10, 2, 0),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "WIN",
 					Games:  3,
@@ -56,7 +56,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 1, 4),
 					newProtoResult(1, 11, 2, 2),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "WIN_DRAW",
 					Games:  3,
@@ -76,7 +76,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 5, 4),
 					newProtoResult(1, 111, 2, 4),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "LOSE",
 					Games:  3,
@@ -96,7 +96,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 5, 4),
 					newProtoResult(1, 11, 2, 4),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "LOSE_DRAW",
 					Games:  3,
@@ -116,7 +116,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 5, 5),
 					newProtoResult(1, 11, 2, 2),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "DRAW",
 					Games:  3,
@@ -136,7 +136,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(5, 1, 5, 1),
 					newProtoResult(1, 11, 2, 2),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "AWAY_TEAM",
 					Result: "LOSE_DRAW",
 					Games:  3,
@@ -179,7 +179,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 		assertions := []struct {
 			Fixture        *classify.Fixture
 			FetchedResults []*statistico.Result
-			Filter         *trader.ResultFilter
+			Filter         *strategy.ResultFilter
 		}{
 			{
 				Fixture: &classify.Fixture{
@@ -194,7 +194,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 1, 4),
 					newProtoResult(1, 10, 2, 2),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "WIN",
 					Games:  3,
@@ -214,7 +214,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 5, 4),
 					newProtoResult(1, 11, 2, 2),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "WIN_DRAW",
 					Games:  3,
@@ -234,7 +234,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 5, 4),
 					newProtoResult(1, 111, 2, 4),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "LOSE",
 					Games:  3,
@@ -254,7 +254,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 5, 4),
 					newProtoResult(1, 11, 5, 4),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "LOSE_DRAW",
 					Games:  3,
@@ -274,7 +274,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 					newProtoResult(10, 1, 5, 5),
 					newProtoResult(1, 11, 2, 2),
 				},
-				Filter: &trader.ResultFilter{
+				Filter: &strategy.ResultFilter{
 					Team:   "HOME_TEAM",
 					Result: "DRAW",
 					Games:  3,
@@ -333,7 +333,7 @@ func TestResultClassifier_MatchesFilter(t *testing.T) {
 
 		ctx := context.Background()
 
-		filter := &trader.ResultFilter{
+		filter := &strategy.ResultFilter{
 			Team:   "AWAY_TEAM",
 			Result: "DRAW",
 			Games:  3,

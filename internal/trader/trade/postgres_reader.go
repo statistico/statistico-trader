@@ -1,21 +1,20 @@
-package postgres
+package trade
 
 import (
 	"database/sql"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"time"
 )
 
-type TradeReader struct {
+type PostgresReader struct {
 	connection *sql.DB
 }
 
-func (t *TradeReader) Get(q *trader.TradeReaderQuery) ([]*trader.Trade, error) {
-	query := buildTradeQuery(t.connection, q)
+func (r *PostgresReader) Get(q *ReaderQuery) ([]*Trade, error) {
+	query := buildTradeQuery(r.connection, q)
 
-	trades := []*trader.Trade{}
+	trades := []*Trade{}
 
 	rows, err := query.Query()
 
@@ -29,7 +28,7 @@ func (t *TradeReader) Get(q *trader.TradeReaderQuery) ([]*trader.Trade, error) {
 	var timestamp int64
 
 	for rows.Next() {
-		var tr trader.Trade
+		var tr Trade
 
 		err := rows.Scan(
 			&id,
@@ -62,7 +61,11 @@ func (t *TradeReader) Get(q *trader.TradeReaderQuery) ([]*trader.Trade, error) {
 	return trades, nil
 }
 
-func buildTradeQuery(db *sql.DB, q *trader.TradeReaderQuery) sq.SelectBuilder {
+func (r *PostgresReader) Exists(market, runner string, eventID uint64, strategyID uuid.UUID) (bool, error) {
+	return true, nil
+}
+
+func buildTradeQuery(db *sql.DB, q *ReaderQuery) sq.SelectBuilder {
 	builder := queryBuilder(db)
 
 	query := builder.
@@ -77,6 +80,10 @@ func buildTradeQuery(db *sql.DB, q *trader.TradeReaderQuery) sq.SelectBuilder {
 	return query
 }
 
-func NewTradeReader(connection *sql.DB) trader.TradeReader {
-	return &TradeReader{connection: connection}
+func queryBuilder(c *sql.DB) sq.StatementBuilderType {
+	return sq.StatementBuilder.PlaceholderFormat(sq.Dollar).RunWith(c)
+}
+
+func NewPostgresReader(connection *sql.DB) Reader {
+	return &PostgresReader{connection: connection}
 }

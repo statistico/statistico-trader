@@ -1,18 +1,17 @@
-package postgres_test
+package strategy_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-trader/internal/trader"
-	"github.com/statistico/statistico-trader/internal/trader/postgres"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/statistico/statistico-trader/internal/trader/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
-func TestStrategyWriter_Insert(t *testing.T) {
+func TestPostgresWriter_Insert(t *testing.T) {
 	conn, cleanUp := test.GetConnection(t, []string{"strategy", "strategy_result_filter", "strategy_stat_filter"})
-	repo := postgres.NewStrategyWriter(conn)
+	repo := strategy.NewPostgresWriter(conn)
 
 	t.Run("increases tables counts", func(t *testing.T) {
 		t.Helper()
@@ -23,7 +22,7 @@ func TestStrategyWriter_Insert(t *testing.T) {
 		compIDs := []uint64{8, 12}
 
 		strategyCounts := []struct {
-			Strategy      *trader.Strategy
+			Strategy      *strategy.Strategy
 			StrategyCount int8
 			FilterCount   int8
 		}{
@@ -104,7 +103,7 @@ func TestStrategyWriter_Insert(t *testing.T) {
 	})
 }
 
-func insertStrategy(t *testing.T, repo trader.StrategyWriter, s *trader.Strategy) {
+func insertStrategy(t *testing.T, repo strategy.Writer, s *strategy.Strategy) {
 	if err := repo.Insert(s); err != nil {
 		t.Errorf("Error when inserting strategy into the database: %s", err.Error())
 	}
@@ -122,8 +121,8 @@ func newStrategy(
 	status,
 	vis string,
 	compIDs []uint64,
-) *trader.Strategy {
-	return &trader.Strategy{
+) *strategy.Strategy {
+	return &strategy.Strategy{
 		ID:             uuid.New(),
 		Name:           name,
 		Description:    description,
@@ -136,7 +135,7 @@ func newStrategy(
 		Side:           side,
 		Visibility:     vis,
 		Status:         status,
-		ResultFilters: []*trader.ResultFilter{
+		ResultFilters: []*strategy.ResultFilter{
 			{
 				Team:   "HOME",
 				Result: "WIN",
@@ -150,7 +149,7 @@ func newStrategy(
 				Venue:  "HOME_AWAY",
 			},
 		},
-		StatFilters: []*trader.StatFilter{
+		StatFilters: []*strategy.StatFilter{
 			{
 				Stat:    "SHOTS_ON_GOAL",
 				Team:    "HOME",
