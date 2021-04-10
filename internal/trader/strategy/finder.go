@@ -49,7 +49,7 @@ func (h *finder) findStrategies(ctx context.Context, m *market.Runner, ch chan<-
 		wg.Add(1)
 		h.filterStrategy(ctx, s, m.EventID, ch, &wg)
 	}
-	
+
 	wg.Wait()
 }
 
