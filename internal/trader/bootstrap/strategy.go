@@ -27,3 +27,7 @@ func (c Container) StrategyResultClassifier() strategy.ResultFilterClassifier {
 func (c Container) StrategyStatClassifier() strategy.StatFilterClassifier {
 	return strategy.NewStatFilterClassifier(c.DataServiceResultClient())
 }
+
+func (c Container) StrategyFinder() strategy.Finder {
+	return strategy.NewFinder(c.StrategyReader(), c.StrategyFilterMatcher(), c.Logger)
+}
