@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"github.com/statistico/statistico-trader/internal/trader/classify"
 	mock2 "github.com/statistico/statistico-trader/internal/trader/mock"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -14,21 +14,21 @@ import (
 )
 
 func TestFilterMatcher_MatchesFilters(t *testing.T) {
-	f1 := &trader.ResultFilter{
+	f1 := &strategy.ResultFilter{
 		Team:   "HOME",
 		Result: "WIN",
 		Games:  3,
 		Venue:  "HOME",
 	}
 
-	f2 := &trader.ResultFilter{
+	f2 := &strategy.ResultFilter{
 		Team:   "AWAY",
 		Result: "LOSE_DRAW",
 		Games:  5,
 		Venue:  "AWAY",
 	}
 
-	f3 := &trader.StatFilter{
+	f3 := &strategy.StatFilter{
 		Stat:    "GOALS",
 		Team:    "HOME_TEAM",
 		Action:  "FOR",
@@ -39,7 +39,7 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 		Venue:   "HOME_AWAY",
 	}
 
-	f4 := &trader.StatFilter{
+	f4 := &strategy.StatFilter{
 		Stat:    "GOALS",
 		Team:    "HOME_TEAM",
 		Action:  "FOR",
@@ -52,8 +52,8 @@ func TestFilterMatcher_MatchesFilters(t *testing.T) {
 
 	ctx := context.Background()
 
-	results := []*trader.ResultFilter{f1, f2}
-	stats := []*trader.StatFilter{f3, f4}
+	results := []*strategy.ResultFilter{f1, f2}
+	stats := []*strategy.StatFilter{f3, f4}
 
 	query := classify.MatcherQuery{
 		EventID:       192810,
@@ -225,7 +225,7 @@ type MockResultClassifier struct {
 	mock.Mock
 }
 
-func (m *MockResultClassifier) MatchesFilter(ctx context.Context, fix *classify.Fixture, f *trader.ResultFilter) (bool, error) {
+func (m *MockResultClassifier) MatchesFilter(ctx context.Context, fix *classify.Fixture, f *strategy.ResultFilter) (bool, error) {
 	args := m.Called(ctx, fix, f)
 	return args.Get(0).(bool), args.Error(1)
 }
@@ -234,7 +234,7 @@ type MockStatClassifier struct {
 	mock.Mock
 }
 
-func (m *MockStatClassifier) MatchesFilter(ctx context.Context, fix *classify.Fixture, f *trader.StatFilter) (bool, error) {
+func (m *MockStatClassifier) MatchesFilter(ctx context.Context, fix *classify.Fixture, f *strategy.StatFilter) (bool, error) {
 	args := m.Called(ctx, fix, f)
 	return args.Get(0).(bool), args.Error(1)
 }

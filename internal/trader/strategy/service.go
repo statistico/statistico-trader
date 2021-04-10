@@ -1,16 +1,16 @@
-package trader
+package strategy
 
 import "github.com/google/uuid"
 
-type StrategyWriter interface {
+type Writer interface {
 	Insert(s *Strategy) error
 }
 
-type StrategyReader interface {
-	Get(q *StrategyReaderQuery) ([]*Strategy, error)
+type Reader interface {
+	Get(q *ReaderQuery) ([]*Strategy, error)
 }
 
-type StrategyReaderQuery struct {
+type ReaderQuery struct {
 	UserID     *uuid.UUID
 	Market     *string
 	Runner     *string
@@ -21,3 +21,4 @@ type StrategyReaderQuery struct {
 	Visibility *string
 	OrderBy    *string
 }
+

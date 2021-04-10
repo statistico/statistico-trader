@@ -1,15 +1,14 @@
-package postgres
+package trade
 
 import (
 	"database/sql"
-	"github.com/statistico/statistico-trader/internal/trader"
 )
 
-type TradeWriter struct {
+type PostgresWriter struct {
 	connection *sql.DB
 }
 
-func (w *TradeWriter) Insert(t *trader.Trade) error {
+func (w *PostgresWriter) Insert(t *Trade) error {
 	builder := queryBuilder(w.connection)
 
 	_, err := builder.
@@ -52,6 +51,6 @@ func (w *TradeWriter) Insert(t *trader.Trade) error {
 	return nil
 }
 
-func NewTradeWriter(connection *sql.DB) trader.TradeWriter {
-	return &TradeWriter{connection: connection}
+func NewPostgresWriter(connection *sql.DB) Writer {
+	return &PostgresWriter{connection: connection}
 }

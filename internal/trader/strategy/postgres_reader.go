@@ -1,19 +1,18 @@
-package postgres
+package strategy
 
 import (
 	"database/sql"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"github.com/statistico/statistico-trader/internal/trader"
 	"time"
 )
 
-type strategyReader struct {
+type postgresReader struct {
 	connection *sql.DB
 }
 
-func (r *strategyReader) Get(q *trader.StrategyReaderQuery) ([]*trader.Strategy, error) {
+func (r *postgresReader) Get(q *ReaderQuery) ([]*Strategy, error) {
 	query := buildReaderQuery(r.connection, q)
 
 	var id string
@@ -25,15 +24,15 @@ func (r *strategyReader) Get(q *trader.StrategyReaderQuery) ([]*trader.Strategy,
 	rows, err := query.Query()
 
 	if err != nil {
-		return []*trader.Strategy{}, err
+		return []*Strategy{}, err
 	}
 
 	defer rows.Close()
 
-	st := []*trader.Strategy{}
+	st := []*Strategy{}
 
 	for rows.Next() {
-		var s trader.Strategy
+		var s Strategy
 
 		err := rows.Scan(
 			&id,
@@ -89,8 +88,8 @@ func (r *strategyReader) Get(q *trader.StrategyReaderQuery) ([]*trader.Strategy,
 	return st, nil
 }
 
-func (r *strategyReader) fetchResultFilters(id string) ([]*trader.ResultFilter, error) {
-	filters := []*trader.ResultFilter{}
+func (r *postgresReader) fetchResultFilters(id string) ([]*ResultFilter, error) {
+	filters := []*ResultFilter{}
 
 	builder := queryBuilder(r.connection)
 
@@ -112,7 +111,7 @@ func (r *strategyReader) fetchResultFilters(id string) ([]*trader.ResultFilter, 
 	defer rows.Close()
 
 	for rows.Next() {
-		var f trader.ResultFilter
+		var f ResultFilter
 
 		err := rows.Scan(
 			&f.Team,
@@ -131,8 +130,8 @@ func (r *strategyReader) fetchResultFilters(id string) ([]*trader.ResultFilter, 
 	return filters, nil
 }
 
-func (r *strategyReader) fetchStatFilters(id string) ([]*trader.StatFilter, error) {
-	filters := []*trader.StatFilter{}
+func (r *postgresReader) fetchStatFilters(id string) ([]*StatFilter, error) {
+	filters := []*StatFilter{}
 
 	builder := queryBuilder(r.connection)
 
@@ -158,7 +157,7 @@ func (r *strategyReader) fetchStatFilters(id string) ([]*trader.StatFilter, erro
 	defer rows.Close()
 
 	for rows.Next() {
-		var f trader.StatFilter
+		var f StatFilter
 
 		err := rows.Scan(
 			&f.Stat,
@@ -181,7 +180,7 @@ func (r *strategyReader) fetchStatFilters(id string) ([]*trader.StatFilter, erro
 	return filters, nil
 }
 
-func buildReaderQuery(db *sql.DB, q *trader.StrategyReaderQuery) sq.SelectBuilder {
+func buildReaderQuery(db *sql.DB, q *ReaderQuery) sq.SelectBuilder {
 	builder := queryBuilder(db)
 
 	query := builder.Select("strategy.*").From("strategy")
@@ -241,6 +240,10 @@ func buildReaderQuery(db *sql.DB, q *trader.StrategyReaderQuery) sq.SelectBuilde
 	return query
 }
 
-func NewStrategyReader(connection *sql.DB) trader.StrategyReader {
-	return &strategyReader{connection: connection}
+func queryBuilder(c *sql.DB) sq.StatementBuilderType {
+	return sq.StatementBuilder.PlaceholderFormat(sq.Dollar).RunWith(c)
+}
+
+func NewPostgresReader(connection *sql.DB) Reader {
+	return &postgresReader{connection: connection}
 }

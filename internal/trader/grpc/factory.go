@@ -7,15 +7,15 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
-func strategyFromRequest(ctx context.Context, r *statistico.SaveStrategyRequest, t time.Time) (*trader.Strategy, error) {
-	strategy := trader.Strategy{
+func strategyFromRequest(ctx context.Context, r *statistico.SaveStrategyRequest, t time.Time) (*strategy.Strategy, error) {
+	st := strategy.Strategy{
 		ID:             uuid.New(),
 		Name:           r.GetName(),
 		Description:    r.GetDescription(),
@@ -37,7 +37,7 @@ func strategyFromRequest(ctx context.Context, r *statistico.SaveStrategyRequest,
 		return nil, status.Errorf(codes.InvalidArgument, "user id provided is not a valid uuid string: %s", err.Error())
 	}
 
-	strategy.UserID = userID
+	st.UserID = userID
 
 	plan, err := parseStakingPlan(r.StakingPlan)
 
@@ -45,31 +45,31 @@ func strategyFromRequest(ctx context.Context, r *statistico.SaveStrategyRequest,
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	strategy.StakingPlan = plan
+	st.StakingPlan = plan
 
 	if r.GetMinOdds() == nil && r.GetMaxOdds() == nil {
 		return nil, status.Error(codes.InvalidArgument, "Min and max odds cannot both be nil")
 	}
 
 	if r.GetMinOdds() != nil {
-		strategy.MinOdds = &r.GetMinOdds().Value
+		st.MinOdds = &r.GetMinOdds().Value
 	}
 
 	if r.GetMaxOdds() != nil {
-		strategy.MaxOdds = &r.GetMaxOdds().Value
+		st.MaxOdds = &r.GetMaxOdds().Value
 	}
 
-	return &strategy, nil
+	return &st, nil
 }
 
-func strategyReaderQuery(ctx context.Context, r *statistico.ListUserStrategiesRequest) (*trader.StrategyReaderQuery, error) {
+func strategyReaderQuery(ctx context.Context, r *statistico.ListUserStrategiesRequest) (*strategy.ReaderQuery, error) {
 	userID, err := uuid.Parse(r.GetUserId())
 
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "user id provided is not a valid uuid string: %s", err.Error())
 	}
 
-	query := trader.StrategyReaderQuery{
+	query := strategy.ReaderQuery{
 		UserID:     &userID,
 	}
 
@@ -81,7 +81,7 @@ func strategyReaderQuery(ctx context.Context, r *statistico.ListUserStrategiesRe
 	return &query, nil
 }
 
-func convertToStatisticoStrategy(s *trader.Strategy) *statistico.Strategy {
+func convertToStatisticoStrategy(s *strategy.Strategy) *statistico.Strategy {
 	st := statistico.Strategy{
 		Id:             s.ID.String(),
 		Name:           s.Name,
@@ -110,7 +110,7 @@ func convertToStatisticoStrategy(s *trader.Strategy) *statistico.Strategy {
 	return &st
 }
 
-func convertResultFilters(f []*trader.ResultFilter) []*statistico.ResultFilter {
+func convertResultFilters(f []*strategy.ResultFilter) []*statistico.ResultFilter {
 	filters := []*statistico.ResultFilter{}
 
 	for _, ft := range f {
@@ -127,7 +127,7 @@ func convertResultFilters(f []*trader.ResultFilter) []*statistico.ResultFilter {
 	return filters
 }
 
-func convertStatFilters(f []*trader.StatFilter) []*statistico.StatFilter {
+func convertStatFilters(f []*strategy.StatFilter) []*statistico.StatFilter {
 	filters := []*statistico.StatFilter{}
 
 	for _, ft := range f {
@@ -148,16 +148,16 @@ func convertStatFilters(f []*trader.StatFilter) []*statistico.StatFilter {
 	return filters
 }
 
-func parseStakingPlan(s *statistico.StakingPlan) (trader.StakingPlan, error) {
+func parseStakingPlan(s *statistico.StakingPlan) (strategy.StakingPlan, error) {
 	if s.Name.String() != "PERCENTAGE" {
-		return trader.StakingPlan{}, fmt.Errorf("staking plan '%s' is not supported", s.Name)
+		return strategy.StakingPlan{}, fmt.Errorf("staking plan '%s' is not supported", s.Name)
 	}
 
 	if s.Value <= 0 {
-		return trader.StakingPlan{}, errors.New("staking plan must be greater than zero")
+		return strategy.StakingPlan{}, errors.New("staking plan must be greater than zero")
 	}
 
-	return trader.StakingPlan{
+	return strategy.StakingPlan{
 		Name:   s.Name.String(),
 		Number: s.Value,
 	}, nil

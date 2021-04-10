@@ -1,7 +1,7 @@
 package classify
 
 import (
-	"github.com/statistico/statistico-trader/internal/trader"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"time"
 )
 
@@ -61,6 +61,6 @@ type Fixture struct {
 
 type MatcherQuery struct {
 	EventID       uint64
-	ResultFilters []*trader.ResultFilter
-	StatFilters   []*trader.StatFilter
+	ResultFilters []*strategy.ResultFilter
+	StatFilters   []*strategy.StatFilter
 }

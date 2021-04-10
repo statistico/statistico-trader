@@ -10,9 +10,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/statistico/statistico-proto/go"
-	"github.com/statistico/statistico-trader/internal/trader"
 	errors2 "github.com/statistico/statistico-trader/internal/trader/errors"
 	g "github.com/statistico/statistico-trader/internal/trader/grpc"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
@@ -310,8 +310,8 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 			},
 		}
 
-		st := mock.MatchedBy(func(s *trader.Strategy) bool {
-			res := []*trader.ResultFilter{
+		st := mock.MatchedBy(func(s *strategy.Strategy) bool {
+			res := []*strategy.ResultFilter{
 				{
 					Team:   "HOME_TEAM",
 					Result: "WIN_DRAW",
@@ -320,7 +320,7 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 				},
 			}
 
-			stat := []*trader.StatFilter{
+			stat := []*strategy.StatFilter{
 				{
 					Stat:    "GOALS",
 					Team:    "HOME_TEAM",
@@ -494,8 +494,8 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 			},
 		}
 
-		st := mock.MatchedBy(func(s *trader.Strategy) bool {
-			res := []*trader.ResultFilter{
+		st := mock.MatchedBy(func(s *strategy.Strategy) bool {
+			res := []*strategy.ResultFilter{
 				{
 					Team:   "HOME_TEAM",
 					Result: "WIN_DRAW",
@@ -504,7 +504,7 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 				},
 			}
 
-			stat := []*trader.StatFilter{
+			stat := []*strategy.StatFilter{
 				{
 					Stat:    "GOALS",
 					Team:    "HOME_TEAM",
@@ -602,8 +602,8 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 			},
 		}
 
-		st := mock.MatchedBy(func(s *trader.Strategy) bool {
-			res := []*trader.ResultFilter{
+		st := mock.MatchedBy(func(s *strategy.Strategy) bool {
+			res := []*strategy.ResultFilter{
 				{
 					Team:   "HOME_TEAM",
 					Result: "WIN_DRAW",
@@ -612,7 +612,7 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 				},
 			}
 
-			stat := []*trader.StatFilter{
+			stat := []*strategy.StatFilter{
 				{
 					Stat:    "GOALS",
 					Team:    "HOME_TEAM",
@@ -682,12 +682,12 @@ func TestStrategyService_ListUserStrategies(t *testing.T) {
 			UserId:               "a5f04fd2-dfe7-41c1-af38-d490119705d8",
 		}
 
-		query := mock.MatchedBy(func(q *trader.StrategyReaderQuery) bool {
+		query := mock.MatchedBy(func(q *strategy.ReaderQuery) bool {
 			assert.Equal(t, "a5f04fd2-dfe7-41c1-af38-d490119705d8", q.UserID.String())
 			return true
 		})
 
-		strategies := []*trader.Strategy{
+		strategies := []*strategy.Strategy{
 			{
 				ID:             uuid.New(),
 				Name:           "Strategy One",
@@ -701,12 +701,12 @@ func TestStrategyService_ListUserStrategies(t *testing.T) {
 				Side:           "BACK",
 				Visibility:     "PUBLIC",
 				Status:         "ACTIVE",
-				StakingPlan:    trader.StakingPlan{
+				StakingPlan:    strategy.StakingPlan{
 					Name:   "PERCENTAGE",
 					Number: 2.5,
 				},
-				ResultFilters:  []*trader.ResultFilter{},
-				StatFilters:    []*trader.StatFilter{},
+				ResultFilters:  []*strategy.ResultFilter{},
+				StatFilters:    []*strategy.StatFilter{},
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
 			},
@@ -732,7 +732,7 @@ type MockStrategyWriter struct {
 	mock.Mock
 }
 
-func (m *MockStrategyWriter) Insert(s *trader.Strategy) error {
+func (m *MockStrategyWriter) Insert(s *strategy.Strategy) error {
 	args := m.Called(s)
 	return args.Error(0)
 }
@@ -741,9 +741,9 @@ type MockStrategyReader struct {
 	mock.Mock
 }
 
-func (m *MockStrategyReader) Get(q *trader.StrategyReaderQuery) ([]*trader.Strategy, error) {
+func (m *MockStrategyReader) Get(q *strategy.ReaderQuery) ([]*strategy.Strategy, error) {
 	args := m.Called(q)
-	return args.Get(0).([]*trader.Strategy), args.Error(1)
+	return args.Get(0).([]*strategy.Strategy), args.Error(1)
 }
 
 type MockMarketClient struct {

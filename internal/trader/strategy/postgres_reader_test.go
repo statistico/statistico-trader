@@ -1,9 +1,8 @@
-package postgres_test
+package strategy_test
 
 import (
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-trader/internal/trader"
-	"github.com/statistico/statistico-trader/internal/trader/postgres"
+	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"github.com/statistico/statistico-trader/internal/trader/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -11,8 +10,8 @@ import (
 
 func TestStrategyReader_Get(t *testing.T) {
 	conn, cleanUp := test.GetConnection(t, []string{"strategy", "strategy_result_filter", "strategy_stat_filter"})
-	writer := postgres.NewStrategyWriter(conn)
-	reader := postgres.NewStrategyReader(conn)
+	writer := strategy.NewPostgresWriter(conn)
+	reader := strategy.NewPostgresReader(conn)
 
 	t.Run("returns a slice of trader.Strategy struct", func(t *testing.T) {
 		t.Helper()
@@ -22,7 +21,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		max := float32(2.50)
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), &min, &max, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -43,7 +42,7 @@ func TestStrategyReader_Get(t *testing.T) {
 
 		order := "name_asc"
 
-		s, err := reader.Get(&trader.StrategyReaderQuery{OrderBy: &order})
+		s, err := reader.Get(&strategy.ReaderQuery{OrderBy: &order})
 
 		if err != nil {
 			t.Fatalf("Expected nil, got %s", err.Error())
@@ -62,7 +61,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		userID := uuid.New()
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -83,7 +82,7 @@ func TestStrategyReader_Get(t *testing.T) {
 
 		order := "name_asc"
 
-		query := trader.StrategyReaderQuery{
+		query := strategy.ReaderQuery{
 			OrderBy: &order,
 			UserID:  &userID,
 		}
@@ -104,7 +103,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		defer cleanUp()
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -126,7 +125,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		order := "name_asc"
 		visibility := "PUBLIC"
 
-		query := trader.StrategyReaderQuery{
+		query := strategy.ReaderQuery{
 			OrderBy:    &order,
 			Visibility: &visibility,
 		}
@@ -147,7 +146,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		defer cleanUp()
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -189,7 +188,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		}
 
 		for _, sc := range strategyCounts {
-			query := trader.StrategyReaderQuery{CompetitionID: &sc.CompetitionID}
+			query := strategy.ReaderQuery{CompetitionID: &sc.CompetitionID}
 
 			s, err := reader.Get(&query)
 
@@ -206,7 +205,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		defer cleanUp()
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -240,7 +239,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		}
 
 		for _, sc := range strategyCounts {
-			query := trader.StrategyReaderQuery{Side: &sc.Side}
+			query := strategy.ReaderQuery{Side: &sc.Side}
 
 			s, err := reader.Get(&query)
 
@@ -257,7 +256,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		defer cleanUp()
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Home", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -295,7 +294,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		}
 
 		for _, sc := range strategyCounts {
-			query := trader.StrategyReaderQuery{Market: &sc.Market}
+			query := strategy.ReaderQuery{Market: &sc.Market}
 
 			s, err := reader.Get(&query)
 
@@ -312,7 +311,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		defer cleanUp()
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Away", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -350,7 +349,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		}
 
 		for _, sc := range strategyCounts {
-			query := trader.StrategyReaderQuery{Runner: &sc.Runner}
+			query := strategy.ReaderQuery{Runner: &sc.Runner}
 
 			s, err := reader.Get(&query)
 
@@ -367,7 +366,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		defer cleanUp()
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), nil, nil, "MATCH_ODDS", "Away", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -401,7 +400,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		}
 
 		for _, sc := range strategyCounts {
-			query := trader.StrategyReaderQuery{Status: &sc.Status}
+			query := strategy.ReaderQuery{Status: &sc.Status}
 
 			s, err := reader.Get(&query)
 
@@ -421,7 +420,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		max := float32(3.30)
 
 		st := []struct {
-			Strategy *trader.Strategy
+			Strategy *strategy.Strategy
 		}{
 			{
 				newStrategy("Strategy A", "First Strategy", uuid.New(), &min, &max, "MATCH_ODDS", "Away", "BACK", "ACTIVE","PUBLIC", []uint64{8, 12}),
@@ -467,7 +466,7 @@ func TestStrategyReader_Get(t *testing.T) {
 		}
 
 		for _, sc := range strategyCounts {
-			query := trader.StrategyReaderQuery{Price: &sc.Price}
+			query := strategy.ReaderQuery{Price: &sc.Price}
 
 			s, err := reader.Get(&query)
 
@@ -480,7 +479,7 @@ func TestStrategyReader_Get(t *testing.T) {
 	})
 }
 
-func assertStrategy(t *testing.T, expected, actual *trader.Strategy) {
+func assertStrategy(t *testing.T, expected, actual *strategy.Strategy) {
 	a := assert.New(t)
 
 	a.Equal(expected.ID, actual.ID)
