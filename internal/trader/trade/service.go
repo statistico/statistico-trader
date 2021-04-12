@@ -22,6 +22,12 @@ type ReaderQuery struct {
 	Result       []string
 }
 
+type Placer interface {
+	// PlaceTrade receives an exchange.Client struct to place a Trade record with an external exchange and returns
+	// the resulting Trade struct.
+	PlaceTrade(ctx context.Context, c exchange.Client, r *market.Runner, s *strategy.Strategy) (*Trade, error)
+}
+
 type Manager interface {
-	PlaceTrade(ctx context.Context, c exchange.Client, r *market.Runner, s strategy.Strategy) (*Trade, error)
+	Manage(ctx context.Context, r *market.Runner, s *strategy.Strategy) error
 }
