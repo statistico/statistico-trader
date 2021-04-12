@@ -39,7 +39,7 @@ func (h *handler) handleBackRunner(ctx context.Context, e *queue.EventMarket, r 
 
 	price := r.BackPrices[0]
 
-	mk := Runner{
+	t := trade.Ticket{
 		MarketID:      e.ID,
 		MarketName:    e.Name,
 		RunnerID:      r.ID,
@@ -49,14 +49,14 @@ func (h *handler) handleBackRunner(ctx context.Context, e *queue.EventMarket, r 
 		SeasonID:      e.SeasonID,
 		EventDate:     e.EventDate,
 		Exchange:      e.Exchange,
-		Price:         Price{
+		Price:         trade.TicketPrice{
 			Value:     price.Price,
 			Size:      price.Size,
 			Side:      strategy.Back,
 		},
 	}
 
-	h.handleRunner(ctx, &mk, wg)
+	h.handleRunner(ctx, &t, wg)
 
 	wg.Done()
 }
@@ -69,7 +69,7 @@ func (h *handler) handleLayRunner(ctx context.Context, e *queue.EventMarket, r *
 
 	price := r.LayPrices[0]
 
-	mk := Runner{
+	t := trade.Ticket{
 		MarketID:      e.ID,
 		MarketName:    e.Name,
 		RunnerID:      r.ID,
@@ -79,37 +79,37 @@ func (h *handler) handleLayRunner(ctx context.Context, e *queue.EventMarket, r *
 		SeasonID:      e.SeasonID,
 		EventDate:     e.EventDate,
 		Exchange:      e.Exchange,
-		Price:         Price{
+		Price:         trade.TicketPrice{
 			Value:     price.Price,
 			Size:      price.Size,
-			Side:      strategy.Lay,
+			Side:      strategy.Back,
 		},
 	}
 
-	h.handleRunner(ctx, &mk, wg)
+	h.handleRunner(ctx, &t, wg)
 
 	wg.Done()
 }
 
-func (h *handler) handleRunner(ctx context.Context, r *Runner, wg *sync.WaitGroup) {
+func (h *handler) handleRunner(ctx context.Context, t *trade.Ticket, wg *sync.WaitGroup) {
 	query := strategy.FinderQuery{
-		MarketName:    r.MarketName,
-		RunnerName:    r.RunnerName,
-		EventID:       r.EventID,
-		CompetitionID: r.CompetitionID,
-		Price:         r.Price.Value,
-		Side:          r.Price.Side,
+		MarketName:    t.MarketName,
+		RunnerName:    t.RunnerName,
+		EventID:       t.EventID,
+		CompetitionID: t.CompetitionID,
+		Price:         t.Price.Value,
+		Side:          t.Price.Side,
 		Status:        strategy.Active,
 	}
-	
+
 	st := h.finder.FindMatchingStrategies(ctx, &query)
 
 	for s := range st {
 		wg.Add(1)
 
 		go func(s *strategy.Strategy) {
-			if err := h.manager.Manage(ctx, r, s); err != nil {
-				h.logger.Errorf("error managing trade for strategy %s and market %s: %+v", s.ID, r.MarketName, err)
+			if err := h.manager.Manage(ctx, t, s); err != nil {
+				h.logger.Errorf("error managing trade for strategy %s and market %s: %+v", s.ID, t.MarketName, err)
 			}
 			wg.Done()
 		}(s)

@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jonboulle/clockwork"
 	"github.com/statistico/statistico-trader/internal/trader/exchange"
-	"github.com/statistico/statistico-trader/internal/trader/market"
 	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"math"
 )
@@ -16,8 +15,8 @@ type placer struct {
 	clock clockwork.Clock
 }
 
-func (p *placer) PlaceTrade(ctx context.Context, c exchange.Client, r *market.Runner, s *strategy.Strategy) (*Trade, error) {
-	exists, err := p.reader.Exists(r.MarketName, r.RunnerName, r.EventID, s.ID)
+func (p *placer) PlaceTrade(ctx context.Context, c exchange.Client, t *Ticket, s *strategy.Strategy) (*Trade, error) {
+	exists, err := p.reader.Exists(t.MarketName, t.RunnerName, t.EventID, s.ID)
 
 	if err != nil {
 		return nil, err
@@ -25,9 +24,9 @@ func (p *placer) PlaceTrade(ctx context.Context, c exchange.Client, r *market.Ru
 
 	if exists {
 		return nil, &DuplicationError{
-			market:     r.MarketName,
-			runner:     r.RunnerName,
-			eventID:    r.EventID,
+			market:     t.MarketName,
+			runner:     t.RunnerName,
+			eventID:    t.EventID,
 			strategyID: s.ID,
 		}
 	}
@@ -46,20 +45,20 @@ func (p *placer) PlaceTrade(ctx context.Context, c exchange.Client, r *market.Ru
 
 	if stake <= 0 {
 		return nil, &InvalidBalanceError{
-			market:     r.MarketName,
-			runner:     r.RunnerName,
-			eventID:    r.EventID,
+			market:     t.MarketName,
+			runner:     t.RunnerName,
+			eventID:    t.EventID,
 			strategyID: s.ID,
 			balance:    stake,
 		}
 	}
 
 	ticket := exchange.TradeTicket{
-		MarketID: r.MarketID,
-		RunnerID: r.RunnerID,
-		Price:    r.Price.Value,
+		MarketID: t.MarketID,
+		RunnerID: t.RunnerID,
+		Price:    t.Price.Value,
 		Stake:    stake,
-		Side:     r.Price.Side,
+		Side:     t.Price.Side,
 	}
 
 	response, err := c.PlaceTrade(ctx, &ticket)
@@ -68,27 +67,27 @@ func (p *placer) PlaceTrade(ctx context.Context, c exchange.Client, r *market.Ru
 		return nil, &ExchangeError{err: err}
 	}
 
-	t := Trade{
+	tr := Trade{
 		ID:          uuid.New(),
 		StrategyID:  s.ID,
 		Exchange:    response.Exchange,
 		ExchangeRef: response.Reference,
-		Market:      r.MarketName,
-		Runner:      r.RunnerName,
+		Market:      t.MarketName,
+		Runner:      t.RunnerName,
 		Price:       ticket.Price,
 		Stake:       ticket.Stake,
-		EventID:     r.EventID,
-		EventDate:   r.EventDate,
+		EventID:     t.EventID,
+		EventDate:   t.EventDate,
 		Side:        ticket.Side,
 		Result:      InPlay,
 		Timestamp:   p.clock.Now(),
 	}
 
-	if err := p.writer.Insert(&t); err != nil {
-		return &t, err
+	if err := p.writer.Insert(&tr); err != nil {
+		return &tr, err
 	}
 
-	return &t, nil
+	return &tr, nil
 }
 
 func calculateStake(account *exchange.Account, plan strategy.StakingPlan) (float32, error) {

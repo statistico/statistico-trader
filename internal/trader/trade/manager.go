@@ -5,7 +5,6 @@ import (
 	betfair "github.com/statistico/statistico-betfair-go-client"
 	"github.com/statistico/statistico-trader/internal/trader/auth"
 	betfair2 "github.com/statistico/statistico-trader/internal/trader/exchange/betfair"
-	"github.com/statistico/statistico-trader/internal/trader/market"
 	"github.com/statistico/statistico-trader/internal/trader/strategy"
 	"net/http"
 )
@@ -15,7 +14,7 @@ type manager struct {
 	placer  Placer
 }
 
-func (m *manager) Manage(ctx context.Context, r *market.Runner, s *strategy.Strategy) error {
+func (m *manager) Manage(ctx context.Context, t *Ticket, s *strategy.Strategy) error {
 	user, err := m.users.ByID(s.UserID)
 
 	if err != nil {
@@ -30,7 +29,7 @@ func (m *manager) Manage(ctx context.Context, r *market.Runner, s *strategy.Stra
 
 	client := betfair2.NewExchangeClient(c)
 
-	_, err = m.placer.PlaceTrade(ctx, client, r, s)
+	_, err = m.placer.PlaceTrade(ctx, client, t, s)
 
 	if err != nil {
 		return err
