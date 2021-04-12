@@ -7,6 +7,7 @@ import (
 type Config struct {
 	AWS
 	Database
+	QueueDriver string
 	Sentry
 	StatisticoDataService
 	StatisticoOddsWarehouseService
@@ -14,8 +15,11 @@ type Config struct {
 }
 
 type AWS struct {
+	Key      string
 	Region  string
 	CognitoUserPoolID string
+	QueueUrl string
+	Secret   string
 }
 
 type Database struct {
@@ -66,6 +70,8 @@ func BuildConfig() *Config {
 		Password: os.Getenv("DB_PASSWORD"),
 		Name:     os.Getenv("DB_NAME"),
 	}
+
+	config.QueueDriver = os.Getenv("QUEUE_DRIVER")
 
 	config.Sentry = Sentry{DSN: os.Getenv("SENTRY_DSN")}
 
