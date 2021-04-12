@@ -29,3 +29,7 @@ type ReaderQuery struct {
 type Finder interface {
 	FindMatchingStrategies(ctx context.Context, m *market.Runner) <-chan *Strategy
 }
+
+type TradeHandler interface {
+	Handle(ctx context.Context, m *market.Runner, s *Strategy) error
+}
