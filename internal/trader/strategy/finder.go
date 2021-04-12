@@ -3,7 +3,6 @@ package strategy
 import (
 	"context"
 	"github.com/sirupsen/logrus"
-	"github.com/statistico/statistico-trader/internal/trader/market"
 	"sync"
 )
 
@@ -13,28 +12,26 @@ type finder struct {
 	logger   *logrus.Logger
 }
 
-func (h *finder) FindMatchingStrategies(ctx context.Context, m *market.Runner) <-chan *Strategy {
+func (h *finder) FindMatchingStrategies(ctx context.Context, q *FinderQuery) <-chan *Strategy {
 	ch := make(chan *Strategy, 100)
 
-	go h.findStrategies(ctx, m, ch)
+	go h.findStrategies(ctx, q, ch)
 
 	return ch
 }
 
-func (h *finder) findStrategies(ctx context.Context, m *market.Runner, ch chan<- *Strategy) {
+func (h *finder) findStrategies(ctx context.Context, q *FinderQuery, ch chan<- *Strategy) {
 	defer close(ch)
 
 	var wg sync.WaitGroup
 
-	active := Active
-
 	query := ReaderQuery{
-		Market:        &m.MarketName,
-		Runner:        &m.RunnerName,
-		Price:         &m.Price.Value,
-		CompetitionID: &m.CompetitionID,
-		Side:          &m.Price.Side,
-		Status:        &active,
+		Market:        &q.MarketName,
+		Runner:        &q.RunnerName,
+		Price:         &q.Price,
+		CompetitionID: &q.CompetitionID,
+		Side:          &q.Side,
+		Status:        &q.Status,
 	}
 
 	st, err := h.reader.Get(&query)
@@ -46,7 +43,7 @@ func (h *finder) findStrategies(ctx context.Context, m *market.Runner, ch chan<-
 
 	for _, s := range st {
 		wg.Add(1)
-		h.filterStrategy(ctx, s, m.EventID, ch, &wg)
+		h.filterStrategy(ctx, s, q.EventID, ch, &wg)
 	}
 
 	wg.Wait()

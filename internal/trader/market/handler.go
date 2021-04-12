@@ -92,7 +92,17 @@ func (h *handler) handleLayRunner(ctx context.Context, e *queue.EventMarket, r *
 }
 
 func (h *handler) handleRunner(ctx context.Context, r *Runner, wg *sync.WaitGroup) {
-	st := h.finder.FindMatchingStrategies(ctx, r)
+	query := strategy.FinderQuery{
+		MarketName:    r.MarketName,
+		RunnerName:    r.RunnerName,
+		EventID:       r.EventID,
+		CompetitionID: r.CompetitionID,
+		Price:         r.Price.Value,
+		Side:          r.Price.Side,
+		Status:        strategy.Active,
+	}
+	
+	st := h.finder.FindMatchingStrategies(ctx, &query)
 
 	for s := range st {
 		wg.Add(1)

@@ -3,7 +3,6 @@ package strategy
 import (
 	"context"
 	"github.com/google/uuid"
-	"github.com/statistico/statistico-trader/internal/trader/market"
 )
 
 type Writer interface {
@@ -26,6 +25,16 @@ type ReaderQuery struct {
 	OrderBy    *string
 }
 
+type FinderQuery struct {
+	MarketName    string    `json:"marketName"`
+	RunnerName    string    `json:"runnerName"`
+	EventID       uint64    `json:"eventId"`
+	CompetitionID uint64    `json:"competitionId"`
+	Price         float32   `json:"price"`
+	Side          string    `json:"side"`
+	Status        string    `json:"status"`
+}
+
 type Finder interface {
-	FindMatchingStrategies(ctx context.Context, m *market.Runner) <-chan *Strategy
+	FindMatchingStrategies(ctx context.Context, q *FinderQuery) <-chan *Strategy
 }
