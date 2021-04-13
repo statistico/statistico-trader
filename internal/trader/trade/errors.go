@@ -40,7 +40,7 @@ type InvalidBalanceError struct {
 
 func (i *InvalidBalanceError) Error() string {
 	return fmt.Sprintf(
-		"invalid balance of %f when placing trade for market %s, runner %s, event %d and strategy %s",
+		"invalid balance of %.2f when placing trade for market %s, runner %s, event %d and strategy %s",
 		i.balance,
 		i.market,
 		i.runner,
