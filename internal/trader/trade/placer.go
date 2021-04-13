@@ -92,11 +92,7 @@ func calculateStake(account *exchange.Account, plan strategy.StakingPlan) float3
 	}
 
 	total := float64(account.Balance) + math.Abs(float64(account.Exposure))
-
-	if total <= 0 {
-		return float32(total)
-	}
-
+	
 	if plan.Name != strategy.PercentageStakingPlan {
 		return 0
 	}
