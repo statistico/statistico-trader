@@ -62,7 +62,23 @@ func (r *PostgresReader) Get(q *ReaderQuery) ([]*Trade, error) {
 }
 
 func (r *PostgresReader) Exists(market, runner string, eventID uint64, strategyID uuid.UUID) (bool, error) {
-	return true, nil
+	var exists bool
+
+	err := r.connection.
+		QueryRow(
+			`SELECT exists (SELECT id FROM trade where market = $1 and runner = $2 and event_id = $3 and strategy_id = $4)`,
+			market,
+			runner,
+			eventID,
+			strategyID.String(),
+		).
+		Scan(&exists)
+
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
 }
 
 func buildTradeQuery(db *sql.DB, q *ReaderQuery) sq.SelectBuilder {

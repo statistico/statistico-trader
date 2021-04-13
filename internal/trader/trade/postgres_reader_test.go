@@ -86,3 +86,43 @@ func TestTradeReader_Get(t *testing.T) {
 		}
 	})
 }
+
+func TestPostgresReader_Exists(t *testing.T) {
+	conn, cleanUp := test.GetConnection(t, []string{"trade"})
+	writer := trade.NewPostgresWriter(conn)
+	reader := trade.NewPostgresReader(conn)
+
+	t.Run("returns true if trade exists", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		id := uuid.New()
+
+		insertTrade(t, writer, newTrade(id, "IN_PLAY"))
+
+		exists, err := reader.Exists("MATCH_ODDS", "Home", 281781, id)
+
+		if err != nil {
+			t.Fatalf("Expected nil, got %+v", err)
+		}
+
+		assert.True(t, exists)
+	})
+
+	t.Run("returns false if trade exists", func(t *testing.T) {
+		t.Helper()
+		defer cleanUp()
+
+		id := uuid.New()
+
+		insertTrade(t, writer, newTrade(id, "IN_PLAY"))
+
+		exists, err := reader.Exists("MATCH_ODDS", "Home", 281789, id)
+
+		if err != nil {
+			t.Fatalf("Expected nil, got %+v", err)
+		}
+
+		assert.False(t, exists)
+	})
+}
