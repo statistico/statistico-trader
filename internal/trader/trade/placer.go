@@ -37,11 +37,7 @@ func (p *placer) PlaceTrade(ctx context.Context, c exchange.Client, t *Ticket, s
 		return nil, &ExchangeError{err: err}
 	}
 
-	stake, err := calculateStake(account, s.StakingPlan)
-
-	if err != nil {
-		return nil, err
-	}
+	stake := calculateStake(account, s.StakingPlan)
 
 	if stake <= 0 {
 		return nil, &InvalidBalanceError{
@@ -90,18 +86,18 @@ func (p *placer) PlaceTrade(ctx context.Context, c exchange.Client, t *Ticket, s
 	return &tr, nil
 }
 
-func calculateStake(account *exchange.Account, plan strategy.StakingPlan) (float32, error) {
+func calculateStake(account *exchange.Account, plan strategy.StakingPlan) float32 {
+	if account.Balance == 0 {
+		return 0
+	}
+
 	total := float64(account.Balance) + math.Abs(float64(account.Exposure))
-
-	if total <= 0 {
-		return float32(total), nil
-	}
-
+	
 	if plan.Name != strategy.PercentageStakingPlan {
-		return 0, nil
+		return 0
 	}
 
-	return float32(total) * plan.Number, nil
+	return (float32(total) / 100) * plan.Number
 }
 
 func NewPlacer(r Reader, w Writer, c clockwork.Clock) Placer {
