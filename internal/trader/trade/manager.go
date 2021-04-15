@@ -27,16 +27,21 @@ func (m *manager) Manage(ctx context.Context, t *Ticket, s *strategy.Strategy) e
 	}
 
 	_, err = m.placer.PlaceTrade(ctx, client, t, s)
+	// Will send notification to user with returned trade
 
-	if err != nil {
-		return err
+	switch e := err.(type) {
+	case *DuplicationError:
+		return nil
+	case nil:
+		return nil
+	default:
+		return e
 	}
-
-	return nil
 }
 
-func NewManager(u auth.UserService, p Placer) Manager {
+func NewManager(f exchange.ClientFactory, u auth.UserService, p Placer) Manager {
 	return &manager{
+		factory: f,
 		users:  u,
 		placer: p,
 	}
