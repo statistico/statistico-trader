@@ -16,15 +16,19 @@ type OrderFailureError struct {
 	runnerID  uint64
 	status    string
 	errorCode string
+	stake     float32
+	price     float32
 }
 
 func (o *OrderFailureError) Error() string {
 	return fmt.Sprintf(
-		"error placing order for market '%s' and runner '%d'. Code: '%s' and Status: '%s'",
+		"error placing order for market %s and runner %d. Code: %s and Status: %s and Stake: %.2f and Price: %.2f",
 		o.marketID,
 		o.runnerID,
 		o.errorCode,
 		o.status,
+		o.stake,
+		o.price,
 	)
 }
 

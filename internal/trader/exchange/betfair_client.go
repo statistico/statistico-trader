@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/jonboulle/clockwork"
 	"github.com/statistico/statistico-betfair-go-client"
+	"math"
 )
 
 type exchangeClient struct {
@@ -46,6 +47,8 @@ func (e *exchangeClient) PlaceTrade(ctx context.Context, t *TradeTicket) (*Trade
 			runnerID:  t.RunnerID,
 			status:    report.Status,
 			errorCode: report.ErrorCode,
+			stake:     t.Stake,
+			price:     t.Price,
 		}
 	}
 
@@ -68,7 +71,7 @@ func (e *exchangeClient) PlaceTrade(ctx context.Context, t *TradeTicket) (*Trade
 
 func buildPlaceOrderRequest(t *TradeTicket) betfair.PlaceOrderRequest {
 	o := betfair.LimitOrder{
-		Size:            t.Stake,
+		Size:            float32(math.Round(float64(t.Stake)*100)/100),
 		Price:           t.Price,
 		PersistenceType: PersistenceTypeLapse,
 		TimeInForce:     FillOrKill,
