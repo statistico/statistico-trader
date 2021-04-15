@@ -82,7 +82,7 @@ func (h *handler) handleLayRunner(ctx context.Context, e *queue.EventMarket, r *
 		Price:         trade.TicketPrice{
 			Value:     price.Price,
 			Size:      price.Size,
-			Side:      strategy.Back,
+			Side:      strategy.Lay,
 		},
 	}
 

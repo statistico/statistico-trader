@@ -6,6 +6,10 @@ services:
     env_file:
       - .env
 
+  queue:
+    env_file:
+      - .env
+
   statistico-trader-grpc:
     env_file:
       - .env
