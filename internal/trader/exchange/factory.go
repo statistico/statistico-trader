@@ -2,12 +2,7 @@ package exchange
 
 import (
 	bfc "github.com/statistico/statistico-betfair-go-client"
-	"github.com/statistico/statistico-trader/internal/trader/bootstrap"
-	"github.com/statistico/statistico-trader/internal/trader/exchange/betfair"
-)
-
-const (
-	Betfair = "betfair"
+	"net/http"
 )
 
 type ClientFactory interface {
@@ -15,7 +10,7 @@ type ClientFactory interface {
 }
 
 type clientFactory struct {
-	config *bootstrap.Config
+	httpClient *http.Client
 }
 
 func (c *clientFactory) Create(exchange, user, password, key string) (Client, error) {
@@ -29,11 +24,11 @@ func (c *clientFactory) Create(exchange, user, password, key string) (Client, er
 		Key:      key,
 	}
 
-	client := bfc.NewClient(c.config.HTTPClient, credentials)
+	client := bfc.NewClient(c.httpClient, credentials)
 
-	return betfair.NewExchangeClient(client), nil
+	return NewBetFairExchangeClient(client), nil
 }
 
-func NewClientFactory(c *bootstrap.Config) ClientFactory {
-	return &clientFactory{config: c}
+func NewClientFactory(c *http.Client) ClientFactory {
+	return &clientFactory{httpClient: c}
 }
