@@ -43,7 +43,7 @@ func (h *finder) findStrategies(ctx context.Context, q *FinderQuery, ch chan<- *
 
 	for _, s := range st {
 		wg.Add(1)
-		h.filterStrategy(ctx, s, q.EventID, ch, &wg)
+		go h.filterStrategy(ctx, s, q.EventID, ch, &wg)
 	}
 
 	wg.Wait()
@@ -52,8 +52,8 @@ func (h *finder) findStrategies(ctx context.Context, q *FinderQuery, ch chan<- *
 func (h *finder) filterStrategy(ctx context.Context, s *Strategy, eventID uint64, ch chan<- *Strategy, wg *sync.WaitGroup) {
 	query := MatcherQuery{
 		EventID:       eventID,
-		ResultFilters: nil,
-		StatFilters:   nil,
+		ResultFilters: s.ResultFilters,
+		StatFilters:   s.StatFilters,
 	}
 
 	matches, err := h.matcher.MatchesFilters(ctx, &query)
