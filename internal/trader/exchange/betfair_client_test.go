@@ -136,7 +136,7 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 
 		a := assert.New(t)
 
-		a.Equal("BETFAIR", trade.Exchange)
+		a.Equal("betfair", trade.Exchange)
 		a.Equal("BET-ID-123", trade.Reference)
 		a.Equal("2020-04-07T12:00:00+00:00", trade.Timestamp)
 	})
@@ -326,7 +326,7 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 
 		assert.Equal(
 			t,
-			"error placing order for market '1.181098580' and runner '16082847'. Code: 'INVALID_MARKET_ID' and Status: 'FAILURE'",
+			"error placing order for market 1.181098580 and runner 16082847. Code: INVALID_MARKET_ID and Status: FAILURE and Stake: 2.00 and Price: 19.00",
 			err.Error(),
 		)
 	})
