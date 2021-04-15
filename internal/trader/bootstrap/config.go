@@ -1,12 +1,14 @@
 package bootstrap
 
 import (
+	"net/http"
 	"os"
 )
 
 type Config struct {
 	AWS
 	Database
+	HTTPClient  *http.Client
 	QueueDriver string
 	Sentry
 	StatisticoDataService
@@ -70,6 +72,8 @@ func BuildConfig() *Config {
 		Password: os.Getenv("DB_PASSWORD"),
 		Name:     os.Getenv("DB_NAME"),
 	}
+
+	config.HTTPClient = &http.Client{}
 
 	config.QueueDriver = os.Getenv("QUEUE_DRIVER")
 

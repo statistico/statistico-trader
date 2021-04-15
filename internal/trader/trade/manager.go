@@ -2,14 +2,13 @@ package trade
 
 import (
 	"context"
-	betfair "github.com/statistico/statistico-betfair-go-client"
 	"github.com/statistico/statistico-trader/internal/trader/auth"
-	betfair2 "github.com/statistico/statistico-trader/internal/trader/exchange/betfair"
+	"github.com/statistico/statistico-trader/internal/trader/exchange"
 	"github.com/statistico/statistico-trader/internal/trader/strategy"
-	"net/http"
 )
 
 type manager struct {
+	factory exchange.ClientFactory
 	users   auth.UserService
 	placer  Placer
 }
@@ -21,13 +20,11 @@ func (m *manager) Manage(ctx context.Context, t *Ticket, s *strategy.Strategy) e
 		return err
 	}
 
-	c := betfair.NewClient(&http.Client{}, betfair.InteractiveCredentials{
-		Username: user.BetFairUserName,
-		Password: user.BetFairPassword,
-		Key:      user.BetFairKey,
-	})
+	client, err := m.factory.Create(t.Exchange, user.BetFairUserName, user.BetFairPassword, user.BetFairKey)
 
-	client := betfair2.NewExchangeClient(c)
+	if err != nil {
+		return err
+	}
 
 	_, err = m.placer.PlaceTrade(ctx, client, t, s)
 

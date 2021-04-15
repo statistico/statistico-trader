@@ -28,6 +28,14 @@ func (o *OrderFailureError) Error() string {
 	)
 }
 
+type InvalidExchangeError struct {
+	exchange string
+}
+
+func (i *InvalidExchangeError) Error() string {
+	return fmt.Sprintf("exchange '%s' is not supported", i.exchange)
+}
+
 type InvalidResponseError struct {
 	Message string
 }
