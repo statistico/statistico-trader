@@ -60,8 +60,11 @@ func BuildConfig() *Config {
 	config := Config{}
 
 	config.AWS = AWS{
-		Region:            os.Getenv("AWS_REGION"),
 		CognitoUserPoolID: os.Getenv("AWS_USER_POOL_ID"),
+		Key:               os.Getenv("AWS_KEY"),
+		QueueUrl:          os.Getenv("AWS_QUEUE_URL"),
+		Region:            os.Getenv("AWS_REGION"),
+		Secret:            os.Getenv("AWS_SECRET"),
 	}
 
 	config.Database = Database{
