@@ -21,6 +21,7 @@ func (m *manager) Manage(ctx context.Context, t *Ticket, s *strategy.Strategy) e
 		return err
 	}
 
+	// Move logic into ExchangeClientFactory
 	c := betfair.NewClient(&http.Client{}, betfair.InteractiveCredentials{
 		Username: user.BetFairUserName,
 		Password: user.BetFairPassword,
@@ -29,13 +30,17 @@ func (m *manager) Manage(ctx context.Context, t *Ticket, s *strategy.Strategy) e
 
 	client := betfair2.NewExchangeClient(c)
 
+	// Will send notification to user with returned trade
 	_, err = m.placer.PlaceTrade(ctx, client, t, s)
 
-	if err != nil {
-		return err
+	switch e := err.(type) {
+	case *DuplicationError:
+		return nil
+	case nil:
+		return nil
+	default:
+		return e
 	}
-
-	return nil
 }
 
 func NewManager(u auth.UserService, p Placer) Manager {
