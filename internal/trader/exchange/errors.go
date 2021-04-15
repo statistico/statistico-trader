@@ -3,45 +3,53 @@ package exchange
 import "fmt"
 
 type ClientError struct {
-	Action string
-	Err    error
+	action string
+	err    error
 }
 
 func (c *ClientError) Error() string {
-	return fmt.Sprintf("error making '%s' request: %s", c.Action, c.Err.Error())
+	return fmt.Sprintf("error making '%s' request: %s", c.action, c.err.Error())
 }
 
 type OrderFailureError struct {
-	MarketID  string
-	RunnerID  uint64
-	Status    string
-	ErrorCode string
+	marketID  string
+	runnerID  uint64
+	status    string
+	errorCode string
 }
 
 func (o *OrderFailureError) Error() string {
 	return fmt.Sprintf(
 		"error placing order for market '%s' and runner '%d'. Code: '%s' and Status: '%s'",
-		o.MarketID,
-		o.RunnerID,
-		o.ErrorCode,
-		o.Status,
+		o.marketID,
+		o.runnerID,
+		o.errorCode,
+		o.status,
 	)
 }
 
+type InvalidExchangeError struct {
+	exchange string
+}
+
+func (i *InvalidExchangeError) Error() string {
+	return fmt.Sprintf("exchange '%s' is not supported", i.exchange)
+}
+
 type InvalidResponseError struct {
-	Message string
+	message string
 }
 
 func (i *InvalidResponseError) Error() string {
-	return fmt.Sprintf("invalid response in exchange client: %s", i.Message)
+	return fmt.Sprintf("invalid response in exchange client: %s", i.message)
 }
 
 type UnmatchedError struct {
-	MarketID  string
-	RunnerID  uint64
-	Status    string
+	marketID  string
+	runnerID  uint64
+	status    string
 }
 
 func (u *UnmatchedError) Error() string {
-	return fmt.Sprintf("trade unmatched for market '%s' and runner '%d' with status '%s'", u.MarketID, u.RunnerID, u.Status)
+	return fmt.Sprintf("trade unmatched for market '%s' and runner '%d' with status '%s'", u.marketID, u.runnerID, u.status)
 }
