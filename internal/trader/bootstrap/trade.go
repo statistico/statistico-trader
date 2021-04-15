@@ -17,5 +17,5 @@ func (c Container) TradePlacer() trade.Placer {
 }
 
 func (c Container) TradeManager() trade.Manager {
-	return trade.NewManager(c.UserService(), c.TradePlacer())
+	return trade.NewManager(c.ExchangeClientFactory(), c.UserService(), c.TradePlacer())
 }

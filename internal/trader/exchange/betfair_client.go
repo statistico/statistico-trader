@@ -1,19 +1,9 @@
-package betfair
+package exchange
 
 import (
 	"context"
 	"github.com/jonboulle/clockwork"
 	"github.com/statistico/statistico-betfair-go-client"
-	"github.com/statistico/statistico-trader/internal/trader/exchange"
-)
-
-const (
-	Betfair = "BETFAIR"
-	ExecutionComplete = "EXECUTION_COMPLETE"
-	FillOrKill = "FILL_OR_KILL"
-	PersistenceTypeLapse = "LAPSE"
-	OrderTypeLimit = "LIMIT"
-	Success = "SUCCESS"
 )
 
 type exchangeClient struct {
@@ -21,53 +11,53 @@ type exchangeClient struct {
 	clock  clockwork.Clock
 }
 
-func (e *exchangeClient) Account(ctx context.Context) (*exchange.Account, error) {
+func (e *exchangeClient) Account(ctx context.Context) (*Account, error) {
 	a, err := e.client.AccountFunds(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &exchange.Account{
+	return &Account{
 		Balance:       a.Balance,
 		Exposure:      a.Exposure,
 		ExposureLimit: a.ExposureLimit,
 	}, nil
 }
 
-func (e *exchangeClient) PlaceTrade(ctx context.Context, t *exchange.TradeTicket) (*exchange.Trade, error) {
+func (e *exchangeClient) PlaceTrade(ctx context.Context, t *TradeTicket) (*Trade, error) {
 	req := buildPlaceOrderRequest(t)
 
 	res, err := e.client.PlaceOrder(ctx, req)
 
 	if err != nil {
-		return nil, &exchange.ClientError{Action: "place orders", Err: err}
+		return nil, &ClientError{action: "place orders", err: err}
 	}
 
 	if len(res.InstructionReports) != 1 {
-		return nil, &exchange.InvalidResponseError{Message: "response does not contain expected instruction report"}
+		return nil, &InvalidResponseError{message: "response does not contain expected instruction report"}
 	}
 
 	report := res.InstructionReports[0]
 
 	if res.Status != Success {
-		return nil, &exchange.OrderFailureError{
-			MarketID:  t.MarketID,
-			RunnerID:  t.RunnerID,
-			Status:    report.Status,
-			ErrorCode: report.ErrorCode,
+		return nil, &OrderFailureError{
+			marketID:  t.MarketID,
+			runnerID:  t.RunnerID,
+			status:    report.Status,
+			errorCode: report.ErrorCode,
 		}
 	}
 
 	if report.OrderStatus != ExecutionComplete {
-		return nil, &exchange.UnmatchedError{
-			MarketID: t.MarketID,
-			RunnerID: t.RunnerID,
-			Status:   report.OrderStatus,
+		return nil, &UnmatchedError{
+			marketID: t.MarketID,
+			runnerID: t.RunnerID,
+			status:   report.OrderStatus,
 		}
 	}
 
-	trade := exchange.Trade{
+	trade := Trade{
 		Exchange:  Betfair,
 		Reference: report.BetID,
 		Timestamp: report.PlacedDate,
@@ -76,7 +66,7 @@ func (e *exchangeClient) PlaceTrade(ctx context.Context, t *exchange.TradeTicket
 	return &trade, nil
 }
 
-func buildPlaceOrderRequest(t *exchange.TradeTicket) betfair.PlaceOrderRequest {
+func buildPlaceOrderRequest(t *TradeTicket) betfair.PlaceOrderRequest {
 	o := betfair.LimitOrder{
 		Size:            t.Stake,
 		Price:           t.Price,
@@ -97,6 +87,6 @@ func buildPlaceOrderRequest(t *exchange.TradeTicket) betfair.PlaceOrderRequest {
 	}
 }
 
-func NewExchangeClient(c betfair.Client) exchange.Client {
+func NewBetFairExchangeClient(c betfair.Client) Client {
 	return &exchangeClient{client: c}
 }

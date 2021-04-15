@@ -1,25 +1,24 @@
-package betfair_test
+package exchange_test
 
 import (
 	"context"
 	"errors"
-	betfair2 "github.com/statistico/statistico-betfair-go-client"
+	betfair "github.com/statistico/statistico-betfair-go-client"
 	"github.com/statistico/statistico-trader/internal/trader/exchange"
-	"github.com/statistico/statistico-trader/internal/trader/exchange/betfair"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
-func TestExchangeClient_Account(t *testing.T) {
+func TestBetFairExchangeClient_Account(t *testing.T) {
 	t.Run("returns account information for a user", func(t *testing.T) {
 		t.Helper()
 
-		mc := new(betfair2.MockClient)
+		mc := new(betfair.MockClient)
 
-		client := betfair.NewExchangeClient(mc)
+		client := exchange.NewBetFairExchangeClient(mc)
 
-		af := betfair2.AccountFunds{
+		af := betfair.AccountFunds{
 			Balance:            10.00,
 			DiscountRate:       0,
 			Exposure:           -59.82,
@@ -49,13 +48,13 @@ func TestExchangeClient_Account(t *testing.T) {
 	t.Run("returns an error if error returned by betfair client", func(t *testing.T) {
 		t.Helper()
 
-		mc := new(betfair2.MockClient)
+		mc := new(betfair.MockClient)
 
-		client := betfair.NewExchangeClient(mc)
+		client := exchange.NewBetFairExchangeClient(mc)
 
 		ctx := context.Background()
 
-		mc.On("AccountFunds", ctx).Return(&betfair2.AccountFunds{}, errors.New("client error"))
+		mc.On("AccountFunds", ctx).Return(&betfair.AccountFunds{}, errors.New("client error"))
 
 		_, err := client.Account(ctx)
 
@@ -71,8 +70,8 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 	t.Run("places trade via betfair client and returns exchange.Trade struct", func(t *testing.T) {
 		t.Helper()
 
-		mc := new(betfair2.MockClient)
-		client := betfair.NewExchangeClient(mc)
+		mc := new(betfair.MockClient)
+		client := exchange.NewBetFairExchangeClient(mc)
 
 		ticket := exchange.TradeTicket{
 			MarketID:        "1.181098580",
@@ -82,24 +81,24 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			Side:            "BACK",
 		}
 
-		req := mock.MatchedBy(func(r betfair2.PlaceOrderRequest) bool {
-			o := betfair2.LimitOrder{
+		req := mock.MatchedBy(func(r betfair.PlaceOrderRequest) bool {
+			o := betfair.LimitOrder{
 				Size:            2.0,
 				Price:           19.0,
 				PersistenceType: "LAPSE",
 				TimeInForce:     "FILL_OR_KILL",
 			}
 
-			i := betfair2.PlaceInstruction{
+			i := betfair.PlaceInstruction{
 				OrderType:   "LIMIT",
 				SelectionID: 16082847,
 				Side:        "BACK",
 				LimitOrder:  o,
 			}
 
-			por := betfair2.PlaceOrderRequest{
+			por := betfair.PlaceOrderRequest{
 				MarketID:            "1.181098580",
-				Instructions:        []betfair2.PlaceInstruction{i},
+				Instructions:        []betfair.PlaceInstruction{i},
 				CustomerRef:         "",
 				MarketVersion:       0,
 			}
@@ -109,14 +108,14 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			return true
 		})
 		
-		res := betfair2.PlaceExecutionReport{
+		res := betfair.PlaceExecutionReport{
 			MarketID:           "1.181098580",
 			Status:             "SUCCESS",
-			InstructionReports: []betfair2.PlaceInstructionReport{
+			InstructionReports: []betfair.PlaceInstructionReport{
 				{
 					Status:              "SUCCESS",
 					OrderStatus:         "EXECUTION_COMPLETE",
-					Instruction:         betfair2.PlaceInstruction{},
+					Instruction:         betfair.PlaceInstruction{},
 					BetID:               "BET-ID-123",
 					PlacedDate:          "2020-04-07T12:00:00+00:00",
 					SizeMatched:         19.0,
@@ -145,8 +144,8 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 	t.Run("returns exchange.ClientError if error returned by betfair client", func(t *testing.T) {
 		t.Helper()
 
-		mc := new(betfair2.MockClient)
-		client := betfair.NewExchangeClient(mc)
+		mc := new(betfair.MockClient)
+		client := exchange.NewBetFairExchangeClient(mc)
 
 		ticket := exchange.TradeTicket{
 			MarketID:        "1.181098580",
@@ -156,24 +155,24 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			Side:            "BACK",
 		}
 
-		req := mock.MatchedBy(func(r betfair2.PlaceOrderRequest) bool {
-			o := betfair2.LimitOrder{
+		req := mock.MatchedBy(func(r betfair.PlaceOrderRequest) bool {
+			o := betfair.LimitOrder{
 				Size:            2.0,
 				Price:           19.0,
 				PersistenceType: "LAPSE",
 				TimeInForce:     "FILL_OR_KILL",
 			}
 
-			i := betfair2.PlaceInstruction{
+			i := betfair.PlaceInstruction{
 				OrderType:   "LIMIT",
 				SelectionID: 16082847,
 				Side:        "BACK",
 				LimitOrder:  o,
 			}
 
-			por := betfair2.PlaceOrderRequest{
+			por := betfair.PlaceOrderRequest{
 				MarketID:            "1.181098580",
-				Instructions:        []betfair2.PlaceInstruction{i},
+				Instructions:        []betfair.PlaceInstruction{i},
 				CustomerRef:         "",
 				MarketVersion:       0,
 			}
@@ -187,7 +186,7 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 
 		ctx := context.Background()
 
-		mc.On("PlaceOrder", ctx, req).Return(&betfair2.PlaceExecutionReport{}, e)
+		mc.On("PlaceOrder", ctx, req).Return(&betfair.PlaceExecutionReport{}, e)
 
 		_, err := client.PlaceTrade(ctx, &ticket)
 
@@ -201,8 +200,8 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 	t.Run("returns exchange.InvalidResponseError if response does not contain InstructionReport", func(t *testing.T) {
 		t.Helper()
 
-		mc := new(betfair2.MockClient)
-		client := betfair.NewExchangeClient(mc)
+		mc := new(betfair.MockClient)
+		client := exchange.NewBetFairExchangeClient(mc)
 
 		ticket := exchange.TradeTicket{
 			MarketID:        "1.181098580",
@@ -212,24 +211,24 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			Side:            "BACK",
 		}
 
-		req := mock.MatchedBy(func(r betfair2.PlaceOrderRequest) bool {
-			o := betfair2.LimitOrder{
+		req := mock.MatchedBy(func(r betfair.PlaceOrderRequest) bool {
+			o := betfair.LimitOrder{
 				Size:            2.0,
 				Price:           19.0,
 				PersistenceType: "LAPSE",
 				TimeInForce:     "FILL_OR_KILL",
 			}
 
-			i := betfair2.PlaceInstruction{
+			i := betfair.PlaceInstruction{
 				OrderType:   "LIMIT",
 				SelectionID: 16082847,
 				Side:        "BACK",
 				LimitOrder:  o,
 			}
 
-			por := betfair2.PlaceOrderRequest{
+			por := betfair.PlaceOrderRequest{
 				MarketID:            "1.181098580",
-				Instructions:        []betfair2.PlaceInstruction{i},
+				Instructions:        []betfair.PlaceInstruction{i},
 				CustomerRef:         "",
 				MarketVersion:       0,
 			}
@@ -239,7 +238,7 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			return true
 		})
 
-		res := betfair2.PlaceExecutionReport{
+		res := betfair.PlaceExecutionReport{
 			MarketID:           "1.181098580",
 			Status:             "SUCCESS",
 		}
@@ -260,8 +259,8 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 	t.Run("returns exchange.OrderFailureError if order status is not SUCCESS", func(t *testing.T) {
 		t.Helper()
 
-		mc := new(betfair2.MockClient)
-		client := betfair.NewExchangeClient(mc)
+		mc := new(betfair.MockClient)
+		client := exchange.NewBetFairExchangeClient(mc)
 
 		ticket := exchange.TradeTicket{
 			MarketID:        "1.181098580",
@@ -271,24 +270,24 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			Side:            "BACK",
 		}
 
-		req := mock.MatchedBy(func(r betfair2.PlaceOrderRequest) bool {
-			o := betfair2.LimitOrder{
+		req := mock.MatchedBy(func(r betfair.PlaceOrderRequest) bool {
+			o := betfair.LimitOrder{
 				Size:            2.0,
 				Price:           19.0,
 				PersistenceType: "LAPSE",
 				TimeInForce:     "FILL_OR_KILL",
 			}
 
-			i := betfair2.PlaceInstruction{
+			i := betfair.PlaceInstruction{
 				OrderType:   "LIMIT",
 				SelectionID: 16082847,
 				Side:        "BACK",
 				LimitOrder:  o,
 			}
 
-			por := betfair2.PlaceOrderRequest{
+			por := betfair.PlaceOrderRequest{
 				MarketID:            "1.181098580",
-				Instructions:        []betfair2.PlaceInstruction{i},
+				Instructions:        []betfair.PlaceInstruction{i},
 				CustomerRef:         "",
 				MarketVersion:       0,
 			}
@@ -298,15 +297,15 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			return true
 		})
 
-		res := betfair2.PlaceExecutionReport{
+		res := betfair.PlaceExecutionReport{
 			MarketID:           "1.181098580",
 			Status:             "FAILURE",
-			InstructionReports: []betfair2.PlaceInstructionReport{
+			InstructionReports: []betfair.PlaceInstructionReport{
 				{
 					Status:              "FAILURE",
 					OrderStatus:         "EXPIRED",
 					ErrorCode:           "INVALID_MARKET_ID",
-					Instruction:         betfair2.PlaceInstruction{},
+					Instruction:         betfair.PlaceInstruction{},
 					BetID:               "BET-ID-123",
 					PlacedDate:          "2020-04-07T12:00:00+00:00",
 					SizeMatched:         19.0,
@@ -335,8 +334,8 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 	t.Run("returns exchange.UnmatchedError if report order status is not EXECUTION_COMPLETE", func(t *testing.T) {
 		t.Helper()
 
-		mc := new(betfair2.MockClient)
-		client := betfair.NewExchangeClient(mc)
+		mc := new(betfair.MockClient)
+		client := exchange.NewBetFairExchangeClient(mc)
 
 		ticket := exchange.TradeTicket{
 			MarketID:        "1.181098580",
@@ -346,24 +345,24 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			Side:            "BACK",
 		}
 
-		req := mock.MatchedBy(func(r betfair2.PlaceOrderRequest) bool {
-			o := betfair2.LimitOrder{
+		req := mock.MatchedBy(func(r betfair.PlaceOrderRequest) bool {
+			o := betfair.LimitOrder{
 				Size:            2.0,
 				Price:           19.0,
 				PersistenceType: "LAPSE",
 				TimeInForce:     "FILL_OR_KILL",
 			}
 
-			i := betfair2.PlaceInstruction{
+			i := betfair.PlaceInstruction{
 				OrderType:   "LIMIT",
 				SelectionID: 16082847,
 				Side:        "BACK",
 				LimitOrder:  o,
 			}
 
-			por := betfair2.PlaceOrderRequest{
+			por := betfair.PlaceOrderRequest{
 				MarketID:            "1.181098580",
-				Instructions:        []betfair2.PlaceInstruction{i},
+				Instructions:        []betfair.PlaceInstruction{i},
 				CustomerRef:         "",
 				MarketVersion:       0,
 			}
@@ -373,14 +372,14 @@ func TestExchangeClient_PlaceTrade(t *testing.T) {
 			return true
 		})
 
-		res := betfair2.PlaceExecutionReport{
+		res := betfair.PlaceExecutionReport{
 			MarketID:           "1.181098580",
 			Status:             "SUCCESS",
-			InstructionReports: []betfair2.PlaceInstructionReport{
+			InstructionReports: []betfair.PlaceInstructionReport{
 				{
 					Status:              "SUCCESS",
 					OrderStatus:         "EXPIRED",
-					Instruction:         betfair2.PlaceInstruction{},
+					Instruction:         betfair.PlaceInstruction{},
 					BetID:               "BET-ID-123",
 					PlacedDate:          "2020-04-07T12:00:00+00:00",
 					SizeMatched:         19.0,
