@@ -40,7 +40,7 @@ func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stre
 		query.MaxOdds = &r.GetMaxOdds().Value
 	}
 
-	ch := s.builder.Build(context.Background(), &query)
+	ch := s.builder.Build(stream.Context(), &query)
 
 	for t := range ch {
 		if err := stream.Send(transformStrategyTrade(t)); err != nil {
@@ -72,7 +72,7 @@ func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveSt
 }
 
 func (s *StrategyService) ListUserStrategies(r *statistico.ListUserStrategiesRequest, stream statistico.StrategyService_ListUserStrategiesServer) error {
-	query, err :=  strategyReaderQuery(context.Background(), r)
+	query, err :=  strategyReaderQuery(stream.Context(), r)
 
 	if err != nil {
 		return err
