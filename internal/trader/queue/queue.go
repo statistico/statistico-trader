@@ -21,7 +21,6 @@ type EventMarket struct {
 type Runner struct {
 	ID     uint64      `json:"id"`
 	Name   string      `json:"name"`
-	Sort   int8        `json:"sort"`
 	BackPrices []PriceSize `json:"backPrices"`
 	LayPrices  []PriceSize `json:"layPrices"`
 }
