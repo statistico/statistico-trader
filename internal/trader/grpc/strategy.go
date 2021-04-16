@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/jonboulle/clockwork"
 	"github.com/sirupsen/logrus"
-	"github.com/statistico/statistico-odds-warehouse-go-grpc-client"
 	"github.com/statistico/statistico-proto/go"
 	"github.com/statistico/statistico-trader/internal/trader/errors"
 	"github.com/statistico/statistico-trader/internal/trader/strategy"
@@ -13,51 +12,41 @@ import (
 )
 
 type StrategyService struct {
-	writer     strategy.Writer
+	builder    strategy.Builder
 	reader     strategy.Reader
-	oddsClient statisticooddswarehouse.MarketClient
+	writer     strategy.Writer
 	logger     *logrus.Logger
 	clock      clockwork.Clock
 	statistico.UnimplementedStrategyServiceServer
 }
 
 func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stream statistico.StrategyService_BuildStrategyServer) error {
-	//req := statistico.MarketRunnerRequest{
-	//	Market:         r.GetMarket(),
-	//	Runner:         r.GetRunner(),
-	//	Line:           r.GetLine(),
-	//	Side:           r.GetSide(),
-	//	MinOdds:        r.GetMinOdds(),
-	//	MaxOdds:        r.GetMaxOdds(),
-	//	CompetitionIds: r.GetCompetitionIds(),
-	//	SeasonIds:      r.GetSeasonIds(),
-	//	DateFrom:       r.GetDateFrom(),
-	//	DateTo:         r.GetDateTo(),
-	//}
-	//
-	//ctx := context.Background()
-	//
-	//markets, errCh := s.oddsClient.MarketRunnerSearch(ctx, &req)
-	//
-	//query := TradeQuery{
-	//	Markets:       markets,
-	//	ResultFilters: transformResultFilters(r.ResultFilters),
-	//	StatFilters:   transformStatFilters(r.StatFilters),
-	//}
-	//
-	//trades := s.finder.Find(ctx, &query)
-	//
-	//for t := range trades {
-	//	if err := stream.Send(t); err != nil {
-	//		s.logger.Errorf("error streaming market runner back to client: %s", err.Error())
-	//	}
-	//}
-	//
-	//err := <-errCh
-	//
-	//if err != nil {
-	//	s.logger.Errorf("error fetching market runners from odds warehouse: %s", err.Error())
-	//}
+	query := strategy.BuilderQuery{
+		Market:         r.GetMarket(),
+		Runner:         r.GetRunner(),
+		Line:           r.GetLine(),
+		Side:           r.GetSide().String(),
+		CompetitionIDs: r.GetCompetitionIds(),
+		SeasonIDs:      r.GetSeasonIds(),
+		ResultFilters:  transformResultFilters(r.GetResultFilters()),
+		StatFilters:    transformStatFilters(r.GetStatFilters()),
+	}
+
+	if r.GetMinOdds() != nil {
+		query.MinOdds = &r.GetMinOdds().Value
+	}
+
+	if r.GetMaxOdds() != nil {
+		query.MaxOdds = &r.GetMaxOdds().Value
+	}
+
+	ch := s.builder.Build(stream.Context(), &query)
+
+	for t := range ch {
+		if err := stream.Send(transformStrategyTrade(t)); err != nil {
+			s.logger.Errorf("error streaming market runner back to client: %s", err.Error())
+		}
+	}
 
 	return nil
 }
@@ -106,16 +95,16 @@ func (s *StrategyService) ListUserStrategies(r *statistico.ListUserStrategiesReq
 }
 
 func NewStrategyService(
+	b strategy.Builder,
 	w strategy.Writer,
 	r strategy.Reader,
-	c statisticooddswarehouse.MarketClient,
 	l *logrus.Logger,
 	cl clockwork.Clock,
 ) *StrategyService {
 	return &StrategyService{
+		builder:    b,
 		writer:     w,
 		reader:     r,
-		oddsClient: c,
 		logger:     l,
 		clock:      cl,
 	}

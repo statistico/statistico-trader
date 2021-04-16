@@ -88,36 +88,36 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 	//	return true
 	//})
 
-	date := timestamppb.New(time.Unix(1584014400, 0))
+	//date := timestamppb.New(time.Unix(1584014400, 0))
 
-	markets := []*statistico.MarketRunner{
-		{
-			MarketName:    "OVER_UNDER_25",
-			RunnerName:    "Over 2.5 Goals",
-			EventId:       138171,
-			CompetitionId: 8,
-			SeasonId:      17420,
-			EventDate:     date,
-			Exchange:      "betfair",
-			Price: &statistico.Price{
-				Value: 1.95,
-				Side:  statistico.SideEnum_BACK,
-			},
-		},
-		{
-			MarketName:    "OVER_UNDER_25",
-			RunnerName:    "Over 2.5 Goals",
-			EventId:       138172,
-			CompetitionId: 8,
-			SeasonId:      17420,
-			EventDate:     date,
-			Exchange:      "betfair",
-			Price: &statistico.Price{
-				Value: 2.15,
-				Side:  statistico.SideEnum_BACK,
-			},
-		},
-	}
+	//markets := []*statistico.MarketRunner{
+	//	{
+	//		MarketName:    "OVER_UNDER_25",
+	//		RunnerName:    "Over 2.5 Goals",
+	//		EventId:       138171,
+	//		CompetitionId: 8,
+	//		SeasonId:      17420,
+	//		EventDate:     date,
+	//		Exchange:      "betfair",
+	//		Price: &statistico.Price{
+	//			Value: 1.95,
+	//			Side:  statistico.SideEnum_BACK,
+	//		},
+	//	},
+	//	{
+	//		MarketName:    "OVER_UNDER_25",
+	//		RunnerName:    "Over 2.5 Goals",
+	//		EventId:       138172,
+	//		CompetitionId: 8,
+	//		SeasonId:      17420,
+	//		EventDate:     date,
+	//		Exchange:      "betfair",
+	//		Price: &statistico.Price{
+	//			Value: 2.15,
+	//			Side:  statistico.SideEnum_BACK,
+	//		},
+	//	},
+	//}
 
 	trades := []*statistico.StrategyTrade{
 		{
@@ -137,30 +137,13 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, hook := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
 		stream := new(MockStrategyBuildServer)
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
-
-		mkReq := mock.MatchedBy(func(r *statistico.MarketRunnerRequest) bool {
-			a := assert.New(t)
-			a.Equal(req.GetMarket(), r.GetMarket())
-			a.Equal(req.GetRunner(), r.GetRunner())
-			a.Equal(req.GetLine(), r.GetLine())
-			a.Equal(req.GetSide(), r.GetSide())
-			a.Equal(req.GetMinOdds(), r.GetMinOdds())
-			a.Equal(req.GetMaxOdds(), r.GetMaxOdds())
-			a.Equal(req.GetCompetitionIds(), r.GetCompetitionIds())
-			a.Equal(req.GetSeasonIds(), r.GetSeasonIds())
-			a.Equal(req.GetDateFrom(), r.GetDateFrom())
-			a.Equal(req.GetDateTo(), r.GetDateTo())
-			return true
-		})
-
-		client.On("MarketRunnerSearch", mock.Anything, mkReq).Return(marketChannel(markets), errChan(nil))
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		stream.On("Send", trades[0]).Times(1).Return(nil)
 
@@ -179,32 +162,13 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, hook := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
 		stream := new(MockStrategyBuildServer)
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
-
-		mkReq := mock.MatchedBy(func(r *statistico.MarketRunnerRequest) bool {
-			a := assert.New(t)
-			a.Equal(req.GetMarket(), r.GetMarket())
-			a.Equal(req.GetRunner(), r.GetRunner())
-			a.Equal(req.GetLine(), r.GetLine())
-			a.Equal(req.GetSide(), r.GetSide())
-			a.Equal(req.GetMinOdds(), r.GetMinOdds())
-			a.Equal(req.GetMaxOdds(), r.GetMaxOdds())
-			a.Equal(req.GetCompetitionIds(), r.GetCompetitionIds())
-			a.Equal(req.GetSeasonIds(), r.GetSeasonIds())
-			a.Equal(req.GetDateFrom(), r.GetDateFrom())
-			a.Equal(req.GetDateTo(), r.GetDateTo())
-			return true
-		})
-
-		e := errors.New("oh no")
-
-		client.On("MarketRunnerSearch", mock.Anything, mkReq).Return(marketChannel([]*statistico.MarketRunner{}), errChan(e))
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		stream.AssertNotCalled(t, "Send")
 
@@ -222,30 +186,13 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, hook := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
 		stream := new(MockStrategyBuildServer)
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
-
-		mkReq := mock.MatchedBy(func(r *statistico.MarketRunnerRequest) bool {
-			a := assert.New(t)
-			a.Equal(req.GetMarket(), r.GetMarket())
-			a.Equal(req.GetRunner(), r.GetRunner())
-			a.Equal(req.GetLine(), r.GetLine())
-			a.Equal(req.GetSide(), r.GetSide())
-			a.Equal(req.GetMinOdds(), r.GetMinOdds())
-			a.Equal(req.GetMaxOdds(), r.GetMaxOdds())
-			a.Equal(req.GetCompetitionIds(), r.GetCompetitionIds())
-			a.Equal(req.GetSeasonIds(), r.GetSeasonIds())
-			a.Equal(req.GetDateFrom(), r.GetDateFrom())
-			a.Equal(req.GetDateTo(), r.GetDateTo())
-			return true
-		})
-
-		client.On("MarketRunnerSearch", mock.Anything, mkReq).Return(marketChannel(markets), errChan(nil))
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		stream.On("Send", trades[0]).Times(1).Return(errors.New("stream failed"))
 
@@ -268,11 +215,11 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
@@ -388,11 +335,11 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
@@ -452,11 +399,11 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
@@ -560,11 +507,11 @@ func TestStrategyService_SaveStrategy(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		r := &statistico.SaveStrategyRequest{
 			Name:           "Money Maker v1",
@@ -670,11 +617,11 @@ func TestStrategyService_ListUserStrategies(t *testing.T) {
 
 		writer := new(MockStrategyWriter)
 		reader := new(MockStrategyReader)
-		client := new(MockMarketClient)
+		builder := new(MockStrategyBuilder)
 		logger, _ := test.NewNullLogger()
 		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
 
-		service := g.NewStrategyService(writer, reader, client, logger, clock)
+		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
 		stream := new(MockStrategyServer)
 
@@ -728,6 +675,15 @@ func TestStrategyService_ListUserStrategies(t *testing.T) {
 	})
 }
 
+type MockStrategyBuilder struct {
+	mock.Mock
+}
+
+func (m *MockStrategyBuilder) Build(ctx context.Context, q *strategy.BuilderQuery) <-chan *strategy.Trade {
+	args := m.Called(ctx, q)
+	return args.Get(0).(<-chan *strategy.Trade)
+}
+
 type MockStrategyWriter struct {
 	mock.Mock
 }
@@ -746,14 +702,6 @@ func (m *MockStrategyReader) Get(q *strategy.ReaderQuery) ([]*strategy.Strategy,
 	return args.Get(0).([]*strategy.Strategy), args.Error(1)
 }
 
-type MockMarketClient struct {
-	mock.Mock
-}
-
-func (m *MockMarketClient) MarketRunnerSearch(ctx context.Context, r *statistico.MarketRunnerRequest) (<-chan *statistico.MarketRunner, <-chan error) {
-	args := m.Called(ctx, r)
-	return args.Get(0).(<-chan *statistico.MarketRunner), args.Get(1).(<-chan error)
-}
 
 func marketChannel(markets []*statistico.MarketRunner) <-chan *statistico.MarketRunner {
 	ch := make(chan *statistico.MarketRunner, len(markets))
