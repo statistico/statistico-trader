@@ -38,7 +38,8 @@ func (b *builder) build(ctx context.Context, ch chan<- *Trade, q *BuilderQuery) 
 
 	for mk := range markets {
 		wg.Add(1)
-		go b.handleMarket(ctx, ch, mk, q, &wg)
+		b.logger.Errorf("Market fetched: %s", mk.MarketId)
+		b.handleMarket(ctx, ch, mk, q, &wg)
 	}
 
 	err := <- errCh
