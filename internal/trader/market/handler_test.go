@@ -35,7 +35,6 @@ func TestHandler_HandleEventMarket(t *testing.T) {
 				{
 					ID:         1,
 					Name:       "Yes",
-					Sort:       1,
 					BackPrices: []queue.PriceSize{
 						{
 							Price: 1.95,
@@ -52,7 +51,6 @@ func TestHandler_HandleEventMarket(t *testing.T) {
 				{
 					ID:         2,
 					Name:       "No",
-					Sort:       1,
 					BackPrices: []queue.PriceSize{
 						{
 							Price: 3.90,
@@ -107,7 +105,6 @@ func TestHandler_HandleEventMarket(t *testing.T) {
 				{
 					ID:         1,
 					Name:       "Yes",
-					Sort:       1,
 					BackPrices: []queue.PriceSize{
 						{
 							Price: 1.95,
@@ -124,7 +121,6 @@ func TestHandler_HandleEventMarket(t *testing.T) {
 				{
 					ID:         2,
 					Name:       "No",
-					Sort:       1,
 					BackPrices: []queue.PriceSize{
 						{
 							Price: 3.90,
