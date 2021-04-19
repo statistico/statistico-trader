@@ -24,8 +24,6 @@ import (
 )
 
 func TestStrategyService_BuildStrategy(t *testing.T) {
-	t.Skip("Reinstate once refactored")
-	
 	req := statistico.BuildStrategyRequest{
 		Market:         "BOTH_TEAMS_TO_SCORE",
 		Runner:         "Yes",
@@ -59,80 +57,61 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 		},
 	}
 
-	//query := mock.MatchedBy(func(q *g.TradeQuery) bool {
-	//	resFil := []*trader.ResultFilter{
-	//		{
-	//			Team:   "HOME_TEAM",
-	//			Result: "WIN_DRAW",
-	//			Games:  uint8(2),
-	//			Venue:  "HOME_AWAY",
-	//		},
-	//	}
-	//
-	//	statFil := []*trader.StatFilter{
-	//		{
-	//			Stat:    "GOALS",
-	//			Team:    "HOME_TEAM",
-	//			Action:  "AGAINST",
-	//			Games:   uint8(4),
-	//			Metric:  "GTE",
-	//			Measure: "AVERAGE",
-	//			Value:   3.1,
-	//			Venue:   "AWAY",
-	//		},
-	//	}
-	//
-	//	assert.Equal(t, resFil, q.ResultFilters)
-	//	assert.Equal(t, statFil, q.StatFilters)
-	//
-	//	return true
-	//})
+	query := mock.MatchedBy(func(q *strategy.BuilderQuery) bool {
+		resFil := []*strategy.ResultFilter{
+			{
+				Team:   "HOME_TEAM",
+				Result: "WIN_DRAW",
+				Games:  uint8(2),
+				Venue:  "HOME_AWAY",
+			},
+		}
 
-	//date := timestamppb.New(time.Unix(1584014400, 0))
+		statFil := []*strategy.StatFilter{
+			{
+				Stat:    "GOALS",
+				Team:    "HOME_TEAM",
+				Action:  "AGAINST",
+				Games:   uint8(4),
+				Metric:  "GTE",
+				Measure: "AVERAGE",
+				Value:   3.1,
+				Venue:   "AWAY",
+			},
+		}
 
-	//markets := []*statistico.MarketRunner{
-	//	{
-	//		MarketName:    "OVER_UNDER_25",
-	//		RunnerName:    "Over 2.5 Goals",
-	//		EventId:       138171,
-	//		CompetitionId: 8,
-	//		SeasonId:      17420,
-	//		EventDate:     date,
-	//		Exchange:      "betfair",
-	//		Price: &statistico.Price{
-	//			Value: 1.95,
-	//			Side:  statistico.SideEnum_BACK,
-	//		},
-	//	},
-	//	{
-	//		MarketName:    "OVER_UNDER_25",
-	//		RunnerName:    "Over 2.5 Goals",
-	//		EventId:       138172,
-	//		CompetitionId: 8,
-	//		SeasonId:      17420,
-	//		EventDate:     date,
-	//		Exchange:      "betfair",
-	//		Price: &statistico.Price{
-	//			Value: 2.15,
-	//			Side:  statistico.SideEnum_BACK,
-	//		},
-	//	},
-	//}
+		a := assert.New(t)
 
-	trades := []*statistico.StrategyTrade{
+		a.Equal("BOTH_TEAMS_TO_SCORE", q.Market)
+		a.Equal("Yes", q.Runner)
+		a.Equal("CLOSING", q.Line)
+		a.Equal("BACK", q.Side)
+		a.Equal([]uint64{8, 9, 10}, q.CompetitionIDs)
+		a.Equal([]uint64{24, 25, 26}, q.SeasonIDs)
+		a.Equal(float32(1.95), *q.MinOdds)
+		a.Equal(float32(3.55), *q.MaxOdds)
+		a.Equal(resFil, q.ResultFilters)
+		a.Equal(statFil, q.StatFilters)
+
+		return true
+	})
+
+	trades := []*strategy.Trade{
 		{
 			MarketName:    "BOTH_TEAMS_TO_SCORE",
 			RunnerName:    "Yes",
-			RunnerPrice:   1.95,
-			EventId:       138171,
-			CompetitionId: 8,
-			SeasonId:      17420,
-			EventDate:     &timestamp.Timestamp{Seconds: 1584014400},
-			Result:        statistico.TradeResultEnum_SUCCESS,
+			Price:   	   1.95,
+			EventID:       138171,
+			CompetitionID: 8,
+			SeasonID:      17420,
+			Exchange: 	   "betfair",
+			Side:           "BACK",
+			EventDate:     time.Unix(1584014400, 0),
+			Result:        strategy.Result("SUCCESS"),
 		},
 	}
 
-	t.Run("parses trade Result struct and streams StrategyTrade structs", func(t *testing.T) {
+	t.Run("builds strategy using builder and stream statistico.StrategyTrade structs", func(t *testing.T) {
 		t.Helper()
 
 		writer := new(MockStrategyWriter)
@@ -145,7 +124,15 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
-		stream.On("Send", trades[0]).Times(1).Return(nil)
+		ctx := context.Background()
+
+		stream.On("Context").Return(ctx)
+
+		tradeCh := tradeChannel(trades)
+
+		builder.On("Build", ctx, query).Return(tradeCh)
+
+		stream.On("Send", mock.AnythingOfType("*statistico.StrategyTrade")).Once().Return(nil)
 
 		err := service.BuildStrategy(&req, stream)
 
@@ -154,31 +141,8 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 		}
 
 		assert.Equal(t, 0, len(hook.Entries))
+		builder.AssertExpectations(t)
 		stream.AssertExpectations(t)
-	})
-
-	t.Run("logs errors if errors are returned from market client", func(t *testing.T) {
-		t.Helper()
-
-		writer := new(MockStrategyWriter)
-		reader := new(MockStrategyReader)
-		builder := new(MockStrategyBuilder)
-		logger, hook := test.NewNullLogger()
-		clock := clockwork.NewFakeClockAt(time.Unix(1616936636, 0))
-
-		stream := new(MockStrategyBuildServer)
-
-		service := g.NewStrategyService(builder, writer, reader, logger, clock)
-
-		stream.AssertNotCalled(t, "Send")
-
-		err := service.BuildStrategy(&req, stream)
-
-		if err == nil {
-			t.Fatal("Expected error, got nil")
-		}
-
-		assert.Equal(t, 1, len(hook.Entries))
 	})
 
 	t.Run("logs error if error streaming StrategyResult struct", func(t *testing.T) {
@@ -194,7 +158,15 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 
 		service := g.NewStrategyService(builder, writer, reader, logger, clock)
 
-		stream.On("Send", trades[0]).Times(1).Return(errors.New("stream failed"))
+		ctx := context.Background()
+
+		stream.On("Context").Return(ctx)
+
+		tradeCh := tradeChannel(trades)
+
+		builder.On("Build", ctx, query).Return(tradeCh)
+
+		stream.On("Send", mock.AnythingOfType("*statistico.StrategyTrade")).Once().Return(errors.New("stream error"))
 
 		err := service.BuildStrategy(&req, stream)
 
@@ -203,7 +175,7 @@ func TestStrategyService_BuildStrategy(t *testing.T) {
 		}
 
 		assert.Equal(t, 1, len(hook.Entries))
-		assert.Equal(t, "error streaming market runner back to client: stream failed", hook.LastEntry().Message)
+		assert.Equal(t, "error streaming strategy trade back to client: stream error", hook.LastEntry().Message)
 		assert.Equal(t, logrus.ErrorLevel, hook.LastEntry().Level)
 		stream.AssertExpectations(t)
 	})
@@ -712,6 +684,11 @@ func (m *MockStrategyBuildServer) Send(s *statistico.StrategyTrade) error {
 	return args.Error(0)
 }
 
+func (m *MockStrategyBuildServer) Context() context.Context {
+	args := m.Called()
+	return args.Get(0).(context.Context)
+}
+
 type MockStrategyServer struct {
 	mock.Mock
 	grpc.ServerStream
@@ -725,4 +702,17 @@ func (m *MockStrategyServer) Send(s *statistico.Strategy) error {
 func (m *MockStrategyServer) Context() context.Context {
 	args := m.Called()
 	return args.Get(0).(context.Context)
+}
+
+
+func tradeChannel(trades []*strategy.Trade) <-chan *strategy.Trade {
+	ch := make(chan *strategy.Trade, len(trades))
+
+	for _, m := range trades {
+		ch <- m
+	}
+
+	close(ch)
+
+	return ch
 }

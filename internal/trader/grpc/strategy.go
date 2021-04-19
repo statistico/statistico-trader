@@ -44,7 +44,7 @@ func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stre
 
 	for t := range ch {
 		if err := stream.Send(transformStrategyTrade(t)); err != nil {
-			s.logger.Errorf("error streaming market runner back to client: %s", err.Error())
+			s.logger.Errorf("error streaming strategy trade back to client: %s", err.Error())
 		}
 	}
 
