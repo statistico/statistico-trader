@@ -27,9 +27,9 @@ services:
       - statistico-trader_default
     tty: true
 
-#  queue:
-#    <<: *console
-#    command: ["./queue"]
+  queue:
+    <<: *console
+    command: ["./queue"]
 
   migrate:
     <<: *console
