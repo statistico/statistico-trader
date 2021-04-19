@@ -48,13 +48,13 @@ func (a *awsTokenAuthoriser) Authorise(ctx context.Context) (context.Context, er
 	)
 
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %v", err)
+		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %+v", err)
 	}
 
 	id, ok := parsed.Get("username")
 
 	if !ok {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %v", err)
+		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %+v", err)
 	}
 
 	newCtx := context.WithValue(ctx, "userID", id)

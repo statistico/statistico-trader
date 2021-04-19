@@ -3,28 +3,23 @@ package grpc
 import (
 	"github.com/statistico/statistico-proto/go"
 	"github.com/statistico/statistico-trader/internal/trader/strategy"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Transform a market Trade struct into a statistico StrategyTrade struct to be consumed within the grpc package
-//func transformTradeResultToStrategyTrade(t *market.Trade) (*statistico.StrategyTrade, error) {
-//	date, _ := ptypes.TimestampProto(t.EventDate)
-//
-//	if t.Result == nil {
-//		return nil, fmt.Errorf("event %d does not contain a result", t.EventId)
-//	}
-//
-//	return &statistico.StrategyTrade{
-//		MarketName:    t.MarketName,
-//		RunnerName:    t.RunnerName,
-//		RunnerPrice:   t.RunnerPrice,
-//		Side:          statistico.SideEnum(statistico.SideEnum_value[t.Side]),
-//		EventId:       t.EventId,
-//		CompetitionId: t.CompetitionId,
-//		SeasonId:      t.SeasonId,
-//		EventDate:     date,
-//		Result:        statistico.TradeResultEnum(statistico.TradeResultEnum_value[*t.Result]),
-//	}, nil
-//}
+// Transform a strategy.Trade struct into a statistico StrategyTrade struct to be consumed within the grpc package
+func transformStrategyTrade(t *strategy.Trade) *statistico.StrategyTrade {
+	return &statistico.StrategyTrade{
+		MarketName:    t.MarketName,
+		RunnerName:    t.RunnerName,
+		RunnerPrice:   t.Price,
+		Side:          statistico.SideEnum(statistico.SideEnum_value[t.Side]),
+		EventId:       t.EventID,
+		CompetitionId: t.CompetitionID,
+		SeasonId:      t.SeasonID,
+		EventDate:     timestamppb.New(t.EventDate),
+		Result:        statistico.TradeResultEnum(statistico.TradeResultEnum_value[string(t.Result)]),
+	}
+}
 
 // Transform statistico ResultFilter structs into trade ResultFilter structs to be consumed within the trade package
 func transformResultFilters(f []*statistico.ResultFilter) []*strategy.ResultFilter {

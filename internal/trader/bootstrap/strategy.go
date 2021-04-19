@@ -31,3 +31,16 @@ func (c Container) StrategyStatClassifier() strategy.StatFilterClassifier {
 func (c Container) StrategyFinder() strategy.Finder {
 	return strategy.NewFinder(c.StrategyReader(), c.StrategyFilterMatcher(), c.Logger)
 }
+
+func (c Container) StrategyResultParser() strategy.ResultParser {
+	return strategy.NewResultParser(c.DataServiceResultClient())
+}
+
+func (c Container) StrategyBuilder() strategy.Builder {
+	return strategy.NewBuilder(
+		c.StrategyFilterMatcher(),
+		c.StrategyResultParser(),
+		c.OddsWarehouseMarketClient(),
+		c.Logger,
+	)
+}
