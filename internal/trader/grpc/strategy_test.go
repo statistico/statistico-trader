@@ -702,38 +702,6 @@ func (m *MockStrategyReader) Get(q *strategy.ReaderQuery) ([]*strategy.Strategy,
 	return args.Get(0).([]*strategy.Strategy), args.Error(1)
 }
 
-
-func marketChannel(markets []*statistico.MarketRunner) <-chan *statistico.MarketRunner {
-	ch := make(chan *statistico.MarketRunner, len(markets))
-
-	for _, m := range markets {
-		ch <- m
-	}
-
-	close(ch)
-
-	return ch
-}
-
-func tradeChannel(results []*statistico.StrategyTrade) <-chan *statistico.StrategyTrade {
-	ch := make(chan *statistico.StrategyTrade, len(results))
-
-	for _, tr := range results {
-		ch <- tr
-	}
-
-	close(ch)
-
-	return ch
-}
-
-func errChan(e error) <-chan error {
-	ch := make(chan error, 1)
-	ch <- e
-	close(ch)
-	return ch
-}
-
 type MockStrategyBuildServer struct {
 	mock.Mock
 	grpc.ServerStream

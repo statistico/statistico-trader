@@ -16,7 +16,7 @@ type Builder interface {
 type builder struct {
 	matcher    FilterMatcher
 	parser     ResultParser
-	oddsClient statisticooddswarehouse.MarketClient
+	marketClient statisticooddswarehouse.MarketClient
 	logger     *logrus.Logger
 }
 
@@ -34,7 +34,7 @@ func (b *builder) build(ctx context.Context, ch chan<- *Trade, q *BuilderQuery) 
 
 	req := buildMarketRequest(q)
 
-	markets, errCh := b.oddsClient.MarketRunnerSearch(ctx, req)
+	markets, errCh := b.marketClient.MarketRunnerSearch(ctx, req)
 
 	for mk := range markets {
 		wg.Add(1)
@@ -126,9 +126,9 @@ func buildMarketRequest(q *BuilderQuery) *statistico.MarketRunnerRequest {
 
 func NewBuilder(m FilterMatcher, p ResultParser, o statisticooddswarehouse.MarketClient, l *logrus.Logger) Builder {
 	return &builder{
-		matcher:    m,
-		parser:     p,
-		oddsClient: o,
-		logger:     l,
+		matcher:      m,
+		parser:       p,
+		marketClient: o,
+		logger:       l,
 	}
 }
