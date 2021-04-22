@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/statistico/statistico-proto/go"
 	"github.com/statistico/statistico-trader/internal/trader/bootstrap"
 	"google.golang.org/grpc"
@@ -21,15 +20,9 @@ func main() {
 		app.Logger.Fatalf("Failed to listen: %v", err)
 	}
 
-	auth := app.TokenAuthoriser()
-
 	opts := grpc.KeepaliveParams(keepalive.ServerParameters{MaxConnectionIdle:5*time.Minute})
 
-	server := grpc.NewServer(
-		opts,
-		grpc.StreamInterceptor(grpc_auth.StreamServerInterceptor(auth.Authorise)),
-		grpc.UnaryInterceptor(grpc_auth.UnaryServerInterceptor(auth.Authorise)),
-	)
+	server := grpc.NewServer(opts)
 
 	statistico.RegisterStrategyServiceServer(server, app.GrpcStrategyService())
 
