@@ -55,12 +55,15 @@ func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveSt
 	st, err := strategyFromRequest(ctx, r, s.clock.Now())
 
 	if err != nil {
+		s.logger.Errorf("error parsing strategy request %+v", err)
 		return nil, err
 	}
 
 	err = s.writer.Insert(st)
 
 	if err != nil {
+		s.logger.Errorf("error saving strategy %+v", err)
+
 		if de, ok := err.(*errors.DuplicationError); ok {
 			return nil, status.Error(codes.AlreadyExists, de.Error())
 		}
