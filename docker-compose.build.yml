@@ -39,6 +39,7 @@ services:
     <<: *console
     networks:
       - statistico_internal
+      - statistico-trader_default
     ports:
       - "50053:50051"
     command: [ "./grpc", "--port 50051" ]
