@@ -84,5 +84,5 @@ jobs:
           family: 'statistico-trader-background'
           cluster-name: 'statistico-production'
           container-image-name-updates: >
-            container=queue,image-and-tag=${AWS_ECR_ACCOUNT_URL}/statistico-trader:${CIRCLE_SHA1}
+            container=queue,image-and-tag=${AWS_ECR_ACCOUNT_URL}/statistico-trader:${CIRCLE_SHA1},
             container=migrate,image-and-tag=${AWS_ECR_ACCOUNT_URL}/statistico-trader:${CIRCLE_SHA1}
