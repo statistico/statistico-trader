@@ -75,6 +75,7 @@ func (s *StrategyService) SaveStrategy(ctx context.Context, r *statistico.SaveSt
 }
 
 func (s *StrategyService) ListUserStrategies(r *statistico.ListUserStrategiesRequest, stream statistico.StrategyService_ListUserStrategiesServer) error {
+	s.logger.Errorf("Request received")
 	query, err :=  strategyReaderQuery(stream.Context(), r)
 
 	if err != nil {
@@ -93,6 +94,8 @@ func (s *StrategyService) ListUserStrategies(r *statistico.ListUserStrategiesReq
 			s.logger.Errorf("error streaming strategy back to client: %s", err.Error())
 		}
 	}
+
+	s.logger.Errorf("Response returned")
 
 	return nil
 }
