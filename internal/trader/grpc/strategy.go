@@ -20,6 +20,10 @@ type StrategyService struct {
 	statistico.UnimplementedStrategyServiceServer
 }
 
+func (s *StrategyService) HealthCheck(ctx context.Context, r *statistico.HealthCheckRequest) (*statistico.HealthCheckResponse, error) {
+	return &statistico.HealthCheckResponse{Message: "HealthCheck OK from statistico-trader"}, nil
+}
+
 func (s *StrategyService) BuildStrategy(r *statistico.BuildStrategyRequest, stream statistico.StrategyService_BuildStrategyServer) error {
 	query := strategy.BuilderQuery{
 		Market:         r.GetMarket(),
