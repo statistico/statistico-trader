@@ -21,6 +21,7 @@ type StrategyService struct {
 }
 
 func (s *StrategyService) HealthCheck(ctx context.Context, r *statistico.HealthCheckRequest) (*statistico.HealthCheckResponse, error) {
+	s.logger.Errorf("Request received")
 	return &statistico.HealthCheckResponse{Message: "HealthCheck OK from statistico-trader"}, nil
 }
 
