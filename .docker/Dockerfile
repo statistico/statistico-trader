@@ -21,4 +21,7 @@ COPY --from=builder /go/bin/goose /usr/local/bin
 COPY --from=builder /app/grpc .
 COPY --from=builder /app/queue .
 
+EXPOSE 50051
+EXPOSE 50052
+
 CMD ["/bin/sh"]
