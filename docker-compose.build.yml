@@ -42,6 +42,7 @@ services:
       - statistico-trader_default
     ports:
       - "50053:50051"
+      - "50054:50052"
     command: [ "./grpc", "--port 50051" ]
 
   test:

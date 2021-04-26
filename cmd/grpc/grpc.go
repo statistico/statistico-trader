@@ -20,7 +20,7 @@ const (
 func main() {
 	app := bootstrap.BuildContainer(bootstrap.BuildConfig())
 
-	lis, err := net.Listen("tcp", ":7777")
+	lis, err := net.Listen("tcp", ":50052")
 
 	if err != nil {
 		app.Logger.Fatalf("Failed to listen: %v", err)
