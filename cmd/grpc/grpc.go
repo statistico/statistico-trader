@@ -59,6 +59,8 @@ type grpcMultiplexer struct {
 
 func (m *grpcMultiplexer) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Request URI %s", r.RequestURI)
+		log.Printf("Request Method %s", r.Method)
 		if r.Method == http.MethodOptions {
 			w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
