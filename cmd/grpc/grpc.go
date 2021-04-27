@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-proto/go"
 	"github.com/statistico/statistico-trader/internal/trader/bootstrap"
 	"google.golang.org/grpc"
@@ -40,7 +39,7 @@ func main() {
 		}),
 	)
 
-	multiplex := grpcMultiplexer{grpcWebServer, app.Logger}
+	multiplex := grpcMultiplexer{grpcWebServer}
 
 	srv := &http.Server{
 		Handler:      multiplex.Handler(),
@@ -54,7 +53,6 @@ func main() {
 
 type grpcMultiplexer struct {
 	*grpcweb.WrappedGrpcServer
-	*logrus.Logger
 }
 
 func (m *grpcMultiplexer) Handler() http.Handler {
@@ -67,6 +65,7 @@ func (m *grpcMultiplexer) Handler() http.Handler {
 			return
 		}
 
+		// This is a work around to handle gRPC health checking from AWS ALB Target Group
 		if r.Method == "PRI" && r.RequestURI == "*" {
 			w.WriteHeader(200)
 			return
