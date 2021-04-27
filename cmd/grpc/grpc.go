@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-proto/go"
 	"github.com/statistico/statistico-trader/internal/trader/bootstrap"
 	"google.golang.org/grpc"
@@ -13,14 +14,10 @@ import (
 	"time"
 )
 
-const (
-	HealthCheck = "/statistico.StrategyService/HealthCheck"
-)
-
 func main() {
 	app := bootstrap.BuildContainer(bootstrap.BuildConfig())
 
-	lis, err := net.Listen("tcp", ":50052")
+	lis, err := net.Listen("tcp", ":7777")
 
 	if err != nil {
 		app.Logger.Fatalf("Failed to listen: %v", err)
@@ -43,13 +40,13 @@ func main() {
 		}),
 	)
 
-	multiplex := grpcMultiplexer{grpcWebServer}
+	multiplex := grpcMultiplexer{grpcWebServer, app.Logger}
 
 	srv := &http.Server{
 		Handler:      multiplex.Handler(),
 		Addr:         ":50051",
 		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		ReadTimeout:  600 * time.Second,
 	}
 
 	log.Fatal(srv.ListenAndServe())
@@ -57,10 +54,14 @@ func main() {
 
 type grpcMultiplexer struct {
 	*grpcweb.WrappedGrpcServer
+	*logrus.Logger
 }
 
 func (m *grpcMultiplexer) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		m.Infof("Request URI %s", r.RequestURI)
+		m.Infof("Request Method %s", r.Method)
+
 		if r.Method == http.MethodOptions {
 			w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -69,10 +70,13 @@ func (m *grpcMultiplexer) Handler() http.Handler {
 			return
 		}
 
-		if m.IsGrpcWebRequest(r) || r.RequestURI == HealthCheck {
+		if m.IsGrpcWebRequest(r) || r.ProtoMajor == 2 {
+			m.Info("Request is gRPC")
 			m.ServeHTTP(w, r)
 			return
 		}
+
+		m.Info("Request is NOT gRPC")
 
 		return
 	})
