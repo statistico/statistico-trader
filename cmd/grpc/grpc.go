@@ -4,6 +4,8 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/statistico/statistico-proto/go"
 	"github.com/statistico/statistico-trader/internal/trader/bootstrap"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
@@ -42,7 +44,7 @@ func main() {
 	multiplex := grpcMultiplexer{grpcWebServer}
 
 	srv := &http.Server{
-		Handler:      multiplex.Handler(),
+		Handler:      h2c.NewHandler(multiplex.Handler(), &http2.Server{}),
 		Addr:         ":50051",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  600 * time.Second,
@@ -62,12 +64,6 @@ func (m *grpcMultiplexer) Handler() http.Handler {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept, Origin, Authorization, X-User-Agent,X-Grpc-Web, Authorization, Keep-Alive")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
-			return
-		}
-
-		// This is a work around to handle gRPC health checking from AWS ALB Target Group
-		if r.Method == "PRI" && r.RequestURI == "*" {
-			w.WriteHeader(200)
 			return
 		}
 
