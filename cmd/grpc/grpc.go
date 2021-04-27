@@ -67,12 +67,16 @@ func (m *grpcMultiplexer) Handler() http.Handler {
 			return
 		}
 
-		if m.IsGrpcWebRequest(r) || r.ProtoMajor == 2 || r.Method == "PRI" {
-			m.Info("Request is gRPC")
+		if r.Method == "PRI" && r.RequestURI == "*" {
+			w.WriteHeader(200)
+			return
+		}
+
+		if m.IsGrpcWebRequest(r) || r.ProtoMajor == 2 {
 			m.ServeHTTP(w, r)
 			return
 		}
-		
+
 		return
 	})
 }
