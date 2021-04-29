@@ -6,8 +6,6 @@ services:
       dockerfile: ./.docker/envoy/Dockerfile
     networks:
       - statistico_internal
-    mem_limit: 1024M
-    mem_reservation: 256M
     environment:
       STATISTICO_TRADER_HOST: statistico-trader-grpc
       STATISTICO_TRADER_PORT: 50051
