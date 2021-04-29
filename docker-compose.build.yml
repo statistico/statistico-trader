@@ -1,5 +1,18 @@
 version: "3.3"
 services:
+  envoy-proxy:
+    build:
+      context: .
+      dockerfile: ./.docker/envoy/Dockerfile
+    networks:
+      - statistico_internal
+    environment:
+      STATISTICO_TRADER_HOST: statistico-trader-grpc
+      STATISTICO_TRADER_PORT: 50051
+    ports:
+      - "9901:9901"
+      - "8080:8080"
+
   postgres:
     image: postgres
     environment:
@@ -41,8 +54,7 @@ services:
       - statistico_internal
       - statistico-trader_default
     ports:
-      - "50053:50051"
-      - "50054:50052"
+      - "50051"
     command: [ "./grpc", "--port 50051" ]
 
   test:
