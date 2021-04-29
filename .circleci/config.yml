@@ -80,6 +80,7 @@ jobs:
           cluster-name: 'statistico-production'
           container-image-name-updates: >
             container=grpc,image-and-tag=${AWS_ECR_ACCOUNT_URL}/statistico-trader:${CIRCLE_SHA1}
+            container=envoy-proxy,image-and-tag=${AWS_ECR_ACCOUNT_URL}/statistico-trader-envoy-proxy:${CIRCLE_SHA1}
       - aws-ecs/update-service:
           family: 'statistico-trader-background'
           cluster-name: 'statistico-production'
