@@ -60,7 +60,7 @@ func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statis
 	matches, err := b.matcher.MatchesFilters(ctx, &query)
 
 	if err != nil {
-		b.logError(mk.MarketName, mk.RunnerName, mk.EventId, err)
+		b.log(mk.MarketName, mk.RunnerName, mk.EventId, err)
 		wg.Done()
 		return
 	}
@@ -69,7 +69,7 @@ func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statis
 		result, err := b.parser.Parse(ctx, mk.EventId, mk.MarketName, mk.RunnerName, q.Side)
 
 		if err != nil {
-			b.logError(mk.MarketName, mk.RunnerName, mk.EventId, err)
+			b.log(mk.MarketName, mk.RunnerName, mk.EventId, err)
 			wg.Done()
 			return
 		}
@@ -93,8 +93,8 @@ func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statis
 	wg.Done()
 }
 
-func (b *builder) logError(market, runner string, eventID uint64, e error) {
-	b.logger.Errorf(
+func (b *builder) log(market, runner string, eventID uint64, e error) {
+	b.logger.Infof(
 		"error handling trade for market %s, runner %s and event %d: %+v",
 		market,
 		runner,
