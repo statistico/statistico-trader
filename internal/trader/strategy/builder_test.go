@@ -136,7 +136,7 @@ func TestBuilder_Build(t *testing.T) {
 		parser.AssertExpectations(t)
 	})
 
-	t.Run("error is logged if error is returned on error channel returned by market client", func(t *testing.T) {
+	t.Run("info is logged if error is returned on error channel returned by market client", func(t *testing.T) {
 		t.Helper()
 
 		matcher := new(MockFilterMatcher)
@@ -230,7 +230,7 @@ func TestBuilder_Build(t *testing.T) {
 		a.Equal(strategy.Result("SUCCESS"), tr.Result)
 
 		a.Equal("error fetching market runners from odds warehouse: error in market client", hook.LastEntry().Message)
-		a.Equal(logrus.ErrorLevel, hook.LastEntry().Level)
+		a.Equal(logrus.InfoLevel, hook.LastEntry().Level)
 
 		matcher.AssertExpectations(t)
 		marketClient.AssertExpectations(t)
@@ -324,7 +324,7 @@ func TestBuilder_Build(t *testing.T) {
 		marketClient.AssertExpectations(t)
 	})
 
-	t.Run("error is logged if error is returned by filter matcher", func(t *testing.T) {
+	t.Run("info is logged if error is returned by filter matcher", func(t *testing.T) {
 		t.Helper()
 
 		matcher := new(MockFilterMatcher)
@@ -406,13 +406,13 @@ func TestBuilder_Build(t *testing.T) {
 
 		assert.Nil(t, tr)
 		assert.Equal(t, "error handling trade for market MATCH_ODDS, runner Home and event 1234: error from filter matcher", hook.LastEntry().Message)
-		assert.Equal(t, logrus.ErrorLevel, hook.LastEntry().Level)
+		assert.Equal(t, logrus.InfoLevel, hook.LastEntry().Level)
 
 		matcher.AssertExpectations(t)
 		marketClient.AssertExpectations(t)
 	})
 
-	t.Run("error is logged if error is returned by result parser", func(t *testing.T) {
+	t.Run("info is logged if error is returned by result parser", func(t *testing.T) {
 		t.Helper()
 
 		matcher := new(MockFilterMatcher)
@@ -494,7 +494,7 @@ func TestBuilder_Build(t *testing.T) {
 
 		assert.Nil(t, tr)
 		assert.Equal(t, "error handling trade for market MATCH_ODDS, runner Home and event 1234: parser error", hook.LastEntry().Message)
-		assert.Equal(t, logrus.ErrorLevel, hook.LastEntry().Level)
+		assert.Equal(t, logrus.InfoLevel, hook.LastEntry().Level)
 
 		matcher.AssertExpectations(t)
 		marketClient.AssertExpectations(t)
