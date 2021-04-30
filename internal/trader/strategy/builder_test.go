@@ -136,7 +136,7 @@ func TestBuilder_Build(t *testing.T) {
 		parser.AssertExpectations(t)
 	})
 
-	t.Run("info is logged if error is returned on error channel returned by market client", func(t *testing.T) {
+	t.Run("error is logged if error is returned on error channel returned by market client", func(t *testing.T) {
 		t.Helper()
 
 		matcher := new(MockFilterMatcher)
@@ -230,7 +230,7 @@ func TestBuilder_Build(t *testing.T) {
 		a.Equal(strategy.Result("SUCCESS"), tr.Result)
 
 		a.Equal("error fetching market runners from odds warehouse: error in market client", hook.LastEntry().Message)
-		a.Equal(logrus.InfoLevel, hook.LastEntry().Level)
+		a.Equal(logrus.ErrorLevel, hook.LastEntry().Level)
 
 		matcher.AssertExpectations(t)
 		marketClient.AssertExpectations(t)
