@@ -1,6 +1,6 @@
 module github.com/statistico/statistico-trader
 
-go 1.13
+go 1.16
 
 require (
 	github.com/Masterminds/squirrel v1.5.0
@@ -23,13 +23,13 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	github.com/statistico/statistico-betfair-go-client v0.0.0-20210407110526-c811e57a1780
 	github.com/statistico/statistico-data-go-grpc-client v0.0.0-20210317184121-2d206ae02b3e
-	github.com/statistico/statistico-odds-warehouse-go-grpc-client v0.0.0-20210416153046-7c4b43fd09ab
+	github.com/statistico/statistico-odds-warehouse-go-grpc-client v0.0.0-20210504150616-d14e88c7ee63
 	github.com/statistico/statistico-proto/go v0.0.0-20210422195817-59a711222ee6
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/net v0.0.0-20210423184538-5f58ad60dda6 // indirect
-	golang.org/x/sys v0.0.0-20210426080607-c94f62235c83 // indirect
-	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b // indirect
+	golang.org/x/net v0.0.0-20210504132125-bbd867fde50d // indirect
+	golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6 // indirect
+	google.golang.org/genproto v0.0.0-20210504143626-3b2ad6ccc450 // indirect
 	google.golang.org/grpc v1.37.0
 	google.golang.org/grpc/examples v0.0.0-20210331235824-f6bb3972ed15 // indirect
 	google.golang.org/protobuf v1.26.0
