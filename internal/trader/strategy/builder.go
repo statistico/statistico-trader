@@ -6,7 +6,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-odds-warehouse-go-grpc-client"
 	"github.com/statistico/statistico-proto/go"
-	"sync"
 )
 
 type Builder interface {
@@ -30,22 +29,13 @@ func (b *builder) Build(ctx context.Context, q *BuilderQuery) <-chan *Trade {
 
 func (b *builder) build(ctx context.Context, ch chan<- *Trade, q *BuilderQuery) {
 	defer close(ch)
-	wg := &sync.WaitGroup{}
 
 	req := buildMarketRequest(q)
 
 	markets, errCh := b.marketClient.MarketRunnerSearch(ctx, req, 5000)
 
-	for w := 1; w <= 6; w++ {
-		wg.Add(1)
-
-		go func(markets <-chan *statistico.MarketRunner, wg *sync.WaitGroup) {
-			for mk := range markets {
-				b.handleMarket(ctx, ch, mk, q)
-			}
-
-			wg.Done()
-		}(markets, wg)
+	for mk := range markets {
+		b.handleMarket(ctx, ch, mk, q)
 	}
 
 	err := <- errCh
@@ -53,8 +43,6 @@ func (b *builder) build(ctx context.Context, ch chan<- *Trade, q *BuilderQuery) 
 	if err != nil {
 		b.logger.Errorf("error fetching market runners from odds warehouse: %s", err.Error())
 	}
-
-	wg.Wait()
 }
 
 func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statistico.MarketRunner, q *BuilderQuery) {
