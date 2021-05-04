@@ -6,7 +6,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/statistico/statistico-odds-warehouse-go-grpc-client"
 	"github.com/statistico/statistico-proto/go"
-	"sync"
 )
 
 type Builder interface {
@@ -30,15 +29,14 @@ func (b *builder) Build(ctx context.Context, q *BuilderQuery) <-chan *Trade {
 
 func (b *builder) build(ctx context.Context, ch chan<- *Trade, q *BuilderQuery) {
 	defer close(ch)
-	var wg sync.WaitGroup
 
 	req := buildMarketRequest(q)
 
 	markets, errCh := b.marketClient.MarketRunnerSearch(ctx, req)
 
 	for mk := range markets {
-		wg.Add(1)
-		go b.handleMarket(ctx, ch, mk, q, &wg)
+		b.logger.Infof("Total markets %d", len(markets))
+		b.handleMarket(ctx, ch, mk, q)
 	}
 
 	err := <- errCh
@@ -46,11 +44,9 @@ func (b *builder) build(ctx context.Context, ch chan<- *Trade, q *BuilderQuery) 
 	if err != nil {
 		b.logger.Errorf("error fetching market runners from odds warehouse: %s", err.Error())
 	}
-
-	wg.Wait()
 }
 
-func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statistico.MarketRunner, q *BuilderQuery, wg *sync.WaitGroup) {
+func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statistico.MarketRunner, q *BuilderQuery) {
 	query := MatcherQuery{
 		EventID:       mk.EventId,
 		ResultFilters: q.ResultFilters,
@@ -61,7 +57,6 @@ func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statis
 
 	if err != nil {
 		b.log(mk.MarketName, mk.RunnerName, mk.EventId, err)
-		wg.Done()
 		return
 	}
 
@@ -70,7 +65,6 @@ func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statis
 
 		if err != nil {
 			b.log(mk.MarketName, mk.RunnerName, mk.EventId, err)
-			wg.Done()
 			return
 		}
 
@@ -89,8 +83,6 @@ func (b *builder) handleMarket(ctx context.Context, ch chan<- *Trade, mk *statis
 
 		ch <- tr
 	}
-
-	wg.Done()
 }
 
 func (b *builder) log(market, runner string, eventID uint64, e error) {
