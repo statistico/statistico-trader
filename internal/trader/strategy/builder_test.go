@@ -37,7 +37,7 @@ func TestBuilder_Build(t *testing.T) {
 		},
 	}
 
-	t.Run("parses markets, matches filters and returns a channel of strategy.Trade struct", func(t *testing.T) {
+	t.Run("parses markets and matches filters and returns a channel of strategy.Trade struct", func(t *testing.T) {
 		t.Helper()
 
 		matcher := new(MockFilterMatcher)
@@ -101,7 +101,7 @@ func TestBuilder_Build(t *testing.T) {
 			return true
 		})
 
-		marketClient.On("MarketRunnerSearch", ctx, marketReq).Return(marketCh, errCh)
+		marketClient.On("MarketRunnerSearch", ctx, marketReq, 5000).Return(marketCh, errCh)
 
 		matcherQuery := strategy.MatcherQuery{
 			EventID:       1234,
@@ -200,7 +200,7 @@ func TestBuilder_Build(t *testing.T) {
 			return true
 		})
 
-		marketClient.On("MarketRunnerSearch", ctx, marketReq).Return(marketCh, errCh)
+		marketClient.On("MarketRunnerSearch", ctx, marketReq, 5000).Return(marketCh, errCh)
 
 		matcherQuery := strategy.MatcherQuery{
 			EventID:       1234,
@@ -301,7 +301,7 @@ func TestBuilder_Build(t *testing.T) {
 			return true
 		})
 
-		marketClient.On("MarketRunnerSearch", ctx, marketReq).Return(marketCh, errCh)
+		marketClient.On("MarketRunnerSearch", ctx, marketReq, 5000).Return(marketCh, errCh)
 
 		matcherQuery := strategy.MatcherQuery{
 			EventID:       1234,
@@ -388,7 +388,7 @@ func TestBuilder_Build(t *testing.T) {
 			return true
 		})
 
-		marketClient.On("MarketRunnerSearch", ctx, marketReq).Return(marketCh, errCh)
+		marketClient.On("MarketRunnerSearch", ctx, marketReq, 5000).Return(marketCh, errCh)
 
 		matcherQuery := strategy.MatcherQuery{
 			EventID:       1234,
@@ -476,7 +476,7 @@ func TestBuilder_Build(t *testing.T) {
 			return true
 		})
 
-		marketClient.On("MarketRunnerSearch", ctx, marketReq).Return(marketCh, errCh)
+		marketClient.On("MarketRunnerSearch", ctx, marketReq, 5000).Return(marketCh, errCh)
 
 		matcherQuery := strategy.MatcherQuery{
 			EventID:       1234,
@@ -515,8 +515,8 @@ type MockMarketClient struct {
 	mock.Mock
 }
 
-func (m *MockMarketClient) MarketRunnerSearch(ctx context.Context, r *statistico.MarketRunnerRequest) (<-chan *statistico.MarketRunner, <-chan error) {
-	args := m.Called(ctx, r)
+func (m *MockMarketClient) MarketRunnerSearch(ctx context.Context, r *statistico.MarketRunnerRequest, chSize int) (<-chan *statistico.MarketRunner, <-chan error) {
+	args := m.Called(ctx, r, chSize)
 	return args.Get(0).(<-chan *statistico.MarketRunner), args.Get(1).(<-chan error)
 }
 
