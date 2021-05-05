@@ -36,7 +36,7 @@ func (b *builder) build(ctx context.Context, ch chan<- *Trade, q *BuilderQuery) 
 
 	markets, errCh := b.marketClient.MarketRunnerSearch(ctx, req, 5000)
 
-	for w := 1; w <= 6; w++ {
+	for w := 1; w <= 3; w++ {
 		wg.Add(1)
 
 		go func(markets <-chan *statistico.MarketRunner, wg *sync.WaitGroup) {
